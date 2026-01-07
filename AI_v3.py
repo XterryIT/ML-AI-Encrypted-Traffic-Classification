@@ -1,11 +1,15 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-#from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import numpy as np
+from sklearn.ensemble import AdaBoostClassifier
+from imblearn.over_sampling import SMOTE
 
-# Set print options to suppress scientific notation for readability
+# Here I will try to decrease FN in Malicious detections by using: class_weight, AdaBoost, Oversampling.
+# Data we use as same for AI_v3
+
 np.set_printoptions(suppress=True)
 
 def print_full_evaluation_report(cm):
@@ -53,9 +57,9 @@ def print_full_evaluation_report(cm):
     print("="*60 + "\n")
 
 def random_forest_model(x_train, x_test, y_train, y_test, feature_names):
-    """
-    feature_names - it is columns in data (x.columns)
-    """
+
+    # weights = {0: 1, 1: 1, 2: 8}
+
     print(f"\n--- Results for: Random Forest (Multiclass) ---")
     
     # 100 trees is a good starting point
@@ -75,29 +79,37 @@ def random_forest_model(x_train, x_test, y_train, y_test, feature_names):
     # Use target_names to make the report readable
     print(classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']))
     
-    #
-    # --- 🚀 NEW BLOCK: FEATURE IMPORTANCE 🚀 ---
-    #
-    print("\n--- FEATURE IMPORTANCE ---")
-    
-    # 1. Get the importances from the trained model
-    importances = model.feature_importances_
-    
-    # 2. Create a DataFrame for a nice display
-    # (Combine feature names with their importance scores)
-    feature_importance_df = pd.DataFrame({
-        'Feature': feature_names,
-        'Importance': importances
-    })
-    
-    # 3. Sort by importance (from most important to least important)
-    feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
-    
-    # 4. Print the Top 10 most important features
-    print("Top 10 features used by the model:")
-    print(feature_importance_df.head(10))
-    # -----------------------------------------------
 
+#AdaBost Model
+def adaboost_model(x_train, x_test, y_train, y_test, feature_names):
+
+    print(f"\n--- Results for: Random Forest (Multiclass) ---")
+    
+    # AdaBoost often uses simple Decision Trees as its base
+    base_estimator = DecisionTreeClassifier(max_depth=2) 
+
+    model = AdaBoostClassifier(
+        estimator=base_estimator,
+        n_estimators=100, # 100 specialists
+        random_state=42
+    )
+
+
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    # Explicitly set labels to ensure [0, 1, 2] order in the matrix
+    cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2])
+
+    print(f"Model Accuracy: {accuracy * 100:.2f}%")
+    print("\n")
+    print_full_evaluation_report(cm)
+    
+    print("\nClassification Report (0=NonDoH, 1=Benign, 2=Malicious):")
+    # Use target_names to make the report readable
+    print(classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']))
+    
 
 #
 # --- Main function ---
@@ -117,9 +129,9 @@ def main():
     # Fill any missing values (NaN) with 0
     df.fillna(0, inplace=True)
 
-    # X = Features (all columns EXCEPT the one we are predicting)
+
     x = df.drop(['Label'], axis=1)
-    # y = Target (the ONE column we are predicting)
+
     y = df['Label']
 
     # Print the class distribution
@@ -129,16 +141,31 @@ def main():
     # Split data for training and testing
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=300)
 
-    # --- CHANGE IS HERE ---
-    # We pass x.columns (the column names) to the function
-    print('\nRandom Forest Model Results:')
-    random_forest_model(x_train, x_test, y_train, y_test, x.columns)
+    
+    # print('\nRandom Forest Model Results:')
+    # Random_Forest_model(X_train, X_test, y_train, y_test, X.columns)
+    # print("-"*100)
+
+    # print('\nRandom Forest Model Results:')
+    # AdaBoost_Model(X_train, X_test, y_train, y_test, X.columns)
+    # print("-"*100)
+
+    # ---  NEW BLOCK: APPLY SMOTE  ---
+    print("\nApplying SMOTE (Oversampling) to the training data...")
+    # We only apply this to the TRAINING data, never the TEST data!
+    smote = SMOTE(random_state=42)
+    x_train_resampled, y_train_resampled = smote.fit_resample(x_train, y_train)
+    
+    print("Oversampling complete. New training class distribution:")
+    print(pd.Series(y_train_resampled).value_counts().sort_index())
+    # --- END OF NEW BLOCK ---
+
+    # Now we train our models on the RESAMPLED data
+    print('\nRandom Forest Model Results (with SMOTE):')
+    random_forest_model(x_train_resampled, x_test, y_train_resampled, y_test, x.columns)
     print("-"*100)
     
-    # (I commented out DecisionTree to speed up the test)
-    # print('Decision Tree Model Results:')
-    # decision_tree_model(x_train, x_test, y_train, y_test, x.columns)
-    # print("-"*100)
+    
 
 
 if __name__ == "__main__":
@@ -147,72 +174,132 @@ if __name__ == "__main__":
 
 
 
-
-
-# Condition 1:  
-# We are looking what a features are most important for Random Forest model in multiclass system (NonDoH, Benign, Malicious).
+# Condition 1:
+#
+# We are implemented a punishment for wrong choice for model especially for Malicious DoH (class 2)
+#
 #
 # Conclusion 1:
-# In test we use system with 3 params to 1 model (Multiclass: NonDoH, Benign, Malicious).
 # 
-# Random Forest it is feature selection, and we can see that the most important parameters are:
-#
-# --- Results for: Random Forest (Multiclass) ---
-# Model Accuracy: 99.73%
-# Confusion Matrix (3x3):
-# [[2989   20    0]
-#  [   4 5985    0]
-#  [   1    7 2994]]
+# We see that presents result are worse than previous, and we don`t see any increases`
+# Especially here methods of weights does not work
 #
 #
-# Top 10 features used by the model:
-#                                Feature  Importance
-# 11                    PacketLengthMode    0.136571
-# 9                     PacketLengthMean    0.122147
-# 7                 PacketLengthVariance    0.093094
-# 10                  PacketLengthMedian    0.087382
-# 8        PacketLengthStandardDeviation    0.068296
-# 14  PacketLengthCoefficientofVariation    0.065780
-# 3                        FlowBytesSent    0.063094
-# 5                    FlowBytesReceived    0.057504
-# 0                           SourcePort    0.051513
-# 2                             Duration    0.025594
-# ----------------------------------------------------------------------------------------------------
-
-
-
-
-
-# Condition 2:
-# If we delete all the calculated features (like mean, median, mode, stddev, variance, covariation) 
-# and leave only basic features (SourcePort,DestinationPort,Duration,FlowBytesSent,FlowSentRate,FlowBytesReceived,FlowReceivedRate,Label)
-#
-#
-# Conclusion 2:
-#
+#Previous Results:
 #--- Results for: Random Forest (Multiclass) ---
 # Model Accuracy: 98.12%
 # Confusion Matrix (3x3):
 # [[ 5837   116    12]
 #  [   72 11811    83]
 #  [   29   138  5845]]
-
-#   5837 - TP for NonDoH
+#
+# 5837 - TP for NonDoH
 # False Negatives (Missed Attacks): 167 (29 predicted as Non-DoH + 138 as Benign).
 #
-#--- FEATURE IMPORTANCE ---
-# Top 10 features used by the model:
-#              Feature  Importance
-# 3      FlowBytesSent    0.225614
-# 5  FlowBytesReceived    0.209809
-# 2           Duration    0.176204
-# 0         SourcePort    0.136081
-# 6   FlowReceivedRate    0.127383
-# 4       FlowSentRate    0.101609
-# 1    DestinationPort    0.023300
+#Present Results:
+# --- Results for: Random Forest (Multiclass) ---
+# Model Accuracy: 98.10%
+# Confusion Matrix (3x3):
+# [[ 5840   115    10]
+#  [   70 11813    83]
+#  [   27   151  5834]]
+#
+#True Positives: 5834 (Slightly lower than Matrix 1).
+#   - False Negatives (Missed Attacks): 178 (27 + 151).
+#
+# Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+#                precision    recall  f1-score   support
+#
+#    NonDoH (0)       0.98      0.98      0.98      5965
+#    Benign (1)       0.98      0.99      0.98     11966
+# Malicious (2)       0.98      0.97      0.98      6012
+#
+#      accuracy                           0.98     23943
+#     macro avg       0.98      0.98      0.98     23943
+#  weighted avg       0.98      0.98      0.98     23943
 #
 #
 #
 #
-# We can see that even without calculated features the model performs well (98.12% accuracy).
-# That means we can add reward or punishment for the FN reaction on Malicious DoH because it is the most important for us to detect it correctly.
+# Condition 2:
+#
+# We use AdaBoost with Random Forest as base estimator
+#
+#
+#
+# Conclusion 2: 
+#
+# The same situation as with weights - the results are worse than previous without AdaBoost
+# --- Results for: Random Forest (Multiclass) ---
+# Model Accuracy: 91.99%
+# Confusion Matrix (3x3):
+# [[ 5574   307    84]
+#  [  522 10851   593]
+#  [   90   323  5599]]
+#   
+# True Positives: 5599 (Lowest among all matrices).
+#   False Negatives (Missed Attacks): 413 (90 + 323).
+#
+# Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+#                precision    recall  f1-score   support
+
+#    NonDoH (0)       0.90      0.93      0.92      5965
+#    Benign (1)       0.95      0.91      0.93     11966
+# Malicious (2)       0.89      0.93      0.91      6012
+
+#      accuracy                           0.92     23943
+#     macro avg       0.91      0.92      0.92     23943
+#  weighted avg       0.92      0.92      0.92     23943
+#
+#
+#
+#
+#
+#
+# Condition 3:
+# We use Oversampling (SMOTE) to balance the classes in training data
+#
+#
+# Conclusion 3:
+#
+# The results are better than previous attempts but accuracy increase a little bit.
+#
+# Applying SMOTE (Oversampling) to the training data...
+# Oversampling complete. New training class distribution:
+# Label
+# 0    27841
+# 1    27841
+# 2    27841
+# Name: count, dtype: int64
+
+# Random Forest Model Results (with SMOTE):
+
+# --- Results for: Random Forest (Multiclass) ---
+# Model Accuracy: 98.19%
+# Confusion Matrix (3x3):
+# [[ 5863    89    13]
+#  [   70 11781   115]
+#  [   32   115  5865]]
+
+#- True Positives: 5865 (Highest among all matrices).
+#   - False Negatives (Missed Attacks): 147 (32 + 115).
+
+# Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+#                precision    recall  f1-score   support
+
+#    NonDoH (0)       0.98      0.98      0.98      5965
+#    Benign (1)       0.98      0.98      0.98     11966
+# Malicious (2)       0.98      0.98      0.98      6012
+
+#      accuracy                           0.98     23943
+#     macro avg       0.98      0.98      0.98     23943
+#  weighted avg       0.98      0.98      0.98     23943
+#
+#
+#
+#
+# General Conclusion:
+# We tested 3 methods to decrease FN for Malicious DoH detection:
+# In 2 case (the weights and AdaBoost) the results became worse.
+# Only Oversampling (SMOTE) helped to increase the results a bit.
+# Generally we need all the calculation because model Random Forest better indicate this parameters
