@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
+import joblib
 from sklearn.base import clone
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
@@ -116,7 +117,16 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
 
     # printitng out model name for visibility
     model_name = model_s1.__class__.__name__
-    print(f"\n--- Results for: {model_name} ---")
+    feature_list = list(feature_names)
+
+    joblib.dump(model_s1, f"models/hierarchy/{model_name}_s1_multiclass.joblib") # Save the TRAINED OBJECT
+    joblib.dump(model_s2, f"models/hierarchy/{model_name}_s2_multiclass.joblib")
+    joblib.dump(feature_list, f"models/hierarchy/{model_name}_features.joblib") # Save feature names
+
+    print(f"SUCCESS: Model saved as '{model_name}_s[1/2]_multiclass.joblib'")
+    print(f"SUCCESS: Feature list saved as '{model_name}_features.joblib'")
+
+    print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
 
     # time spent on training
     training_time = end_time - start_time
@@ -162,7 +172,7 @@ def main():
     # defining classifiers
     models = [DecisionTreeClassifier(random_state=42),
               RandomForestClassifier(n_estimators=100, random_state=42),
-              KNeighborsClassifier(n_neighbors=10),]
+              KNeighborsClassifier(n_neighbors=10)]
 
     for model in models:
         model_s1 = clone(model)

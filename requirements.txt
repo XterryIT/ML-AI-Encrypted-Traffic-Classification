@@ -4,3 +4,4 @@ numpy
 imblearn
 matplotlib
 imbalanced-learn==0.13.0
+joblib

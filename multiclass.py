@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
+import joblib
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
@@ -142,12 +143,26 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     model.fit(x_train, y_train) # training the model
     end_time = time.time() # stopping the timer
 
-    # printitng out model name for visibility
+    # defining vars for prints and saves
     model_name = model.__class__.__name__
+    feature_list = list(feature_names)
+
     if smote == False:
-        print(f"\n--- Results for: {model_name} ---")
+        joblib.dump(model, f"models/{model_name}_multiclass.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/{model_name}_features.joblib") # Save feature names
+
+        print(f"SUCCESS: Model saved as '{model_name}_multiclass.joblib'")
+        print(f"SUCCESS: Feature list saved as '{model_name}_features.joblib'")
+
+        print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
     elif smote == True:
-        print(f"\n--- Results for: {model_name} (with SMOTE) ---")
+        joblib.dump(model, f"models/{model_name}_SMOTE_multiclass.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/{model_name}_SMOTE_features.joblib") # Save feature names
+
+        print(f"SUCCESS: Model saved as '{model_name}_SMOTE_multiclass.joblib'")
+        print(f"SUCCESS: Feature list saved as '{model_name}_SMOTE_features.joblib'")
+
+        print(f"\n--- Results for: {model_name} (with SMOTE) ---") # printitng out model name for visibility
 
     # time spent on training
     training_time = end_time - start_time
