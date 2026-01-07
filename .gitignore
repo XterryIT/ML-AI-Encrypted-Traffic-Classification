@@ -3,3 +3,5 @@
 /.venv/*
 /models/*
 /data/*
+!models/hierarchy/.gitkeep
+!data/.gitkeep
