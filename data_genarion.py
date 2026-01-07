@@ -11,7 +11,7 @@ def opening_regular_data():
     return df_doh, df_non_doh, df_benign, df_malicious
 
 
-def train_data_separate_params():
+def small_data_separate_params():
     df_doh, df_non_doh, df_benign, df_malicious = opening_regular_data()
 
 
@@ -37,7 +37,7 @@ def train_data_separate_params():
     merged_df.to_csv('data/train_sample.csv', index=False)
 
 
-def train_data_all_params():
+def small_data_all_params():
     df_doh, df_non_doh, df_benign, df_malicious = opening_regular_data()
 
 
@@ -63,7 +63,7 @@ def train_data_all_params():
     merged_df.to_csv('data/train_sample.csv', index=False)
 # #Data Version 3 for AI 3 (Training data)
 
-def test_all_params():
+def all_params():
     df_doh, df_non_doh, df_benign, df_malicious = opening_regular_data()
 
 
@@ -90,10 +90,8 @@ def test_all_params():
 
 
 
-
-
 def main():
-    test_all_params()
+    all_params()
 
 if __name__ == "__main__":
     main()
