@@ -51,9 +51,9 @@ def mod():
             merged_df.to_csv('data/all_params.csv', index=False)
     else:
         if c == 'y':
-            merged_df.to_csv('data/smallset_chosen_params.csv', index=False)
+            merged_df.to_csv(f"data/{n}_chosen_params.csv", index=False)
         else:
-            merged_df.to_csv('data/smallset_all_params.csv', index=False)
+            merged_df.to_csv(f"data/{n}_all_params.csv", index=False)
 
 
 def main():
