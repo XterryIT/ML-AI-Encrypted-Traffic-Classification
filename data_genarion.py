@@ -9,7 +9,6 @@ def opening_regular_data():
 
     return df_non_doh, df_benign, df_malicious
 
-
 def parsing(n, columns_to_drop):
     df_non_doh, df_benign, df_malicious = opening_regular_data()
 
@@ -36,26 +35,29 @@ def parsing(n, columns_to_drop):
 
     return merged_df
 
-
-def small_data_separate_params():
-    columns_to_drop = ['SourcePort', 'DestinationPort', 'TimeStamp', 'SourceIP', 'DestinationIP' ,'PacketLengthVariance', 'PacketLengthStandardDeviation', 'PacketLengthMean', 'PacketLengthMedian', 'PacketLengthMode', 'PacketLengthSkewFromMedian', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'PacketTimeStandardDeviation', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation']
-    merged_df = parsing(20000, columns_to_drop)
-    merged_df.to_csv('data/small_data_separate.csv', index=False)
-
-def small_data_all_params():
-    columns_to_drop = ['SourceIP', 'DestinationIP', 'TimeStamp', 'SourcePort', 'DestinationPort']
-    merged_df = parsing(20000, columns_to_drop)
-    merged_df.to_csv('data/small_data_all.csv', index=False)
-    #Data Version 3 for AI 3 (Training data)
-
-def all_params():
-    columns_to_drop = ['SourceIP', 'DestinationIP', 'TimeStamp', 'SourcePort', 'DestinationPort']
-    merged_df = parsing(0, columns_to_drop)
-    merged_df.to_csv('data/all_params.csv', index=False)
+def mod():
+    columns = ['SourceIP', 'DestinationIP', 'TimeStamp', 'SourcePort', 'DestinationPort'] # this should always be dropped
+    c = input("Dropping more than basic columns? (y for yes)")
+    if c == "y":
+        columns.append['PacketLengthVariance', 'PacketLengthStandardDeviation', 'PacketLengthMean', 'PacketLengthMedian', 'PacketLengthMode', 'PacketLengthSkewFromMedian', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'PacketTimeStandardDeviation', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation']
+        print(columns)
+    
+    n = int(input("Dataset lines? (0 for all)")) # sets how many lines it takes from every file # set to 0 to get everything from the file
+    merged_df = parsing(n, columns)
+    if n == 0:
+        if c == 'y':
+            merged_df.to_csv('data/chosen_params.csv', index=False)
+        else:
+            merged_df.to_csv('data/all_params.csv', index=False)
+    else:
+        if c == 'y':
+            merged_df.to_csv('data/smallset_chosen_params.csv', index=False)
+        else:
+            merged_df.to_csv('data/smallset_all_params.csv', index=False)
 
 
 def main():
-    all_params()
+    mod()
 
 if __name__ == "__main__":
     main()
