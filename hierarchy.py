@@ -17,7 +17,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 def prepare_data():
     try:
-        df = pd.read_csv('sample.csv')
+        df = pd.read_csv('data/sample.csv')
     except FileNotFoundError:
         print("ERROR: File not found!")
         return

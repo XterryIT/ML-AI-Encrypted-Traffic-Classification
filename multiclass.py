@@ -23,7 +23,7 @@ from sklearn.neural_network import MLPClassifier
 
 def prepare_data():
     try:
-        df = pd.read_csv('sample.csv')
+        df = pd.read_csv('data/sample.csv')
     except FileNotFoundError:
         print("ERROR: File not found!")
         return
