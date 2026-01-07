@@ -1,3 +1,4 @@
+from py_compile import main
 import pandas as pd
 
 
@@ -62,6 +63,37 @@ def train_data_all_params():
     merged_df.to_csv('data/train_sample.csv', index=False)
 # #Data Version 3 for AI 3 (Training data)
 
+def test_all_params():
+    df_doh, df_non_doh, df_benign, df_malicious = opening_regular_data()
+
+
+    doh_temp = df_doh.copy()
+    non_doh_temp = df_non_doh.copy()
+    benign_temp = df_benign.copy()
+    malicious_temp = df_malicious.copy()
+
+    columns_to_drop = ['SourceIP', 'DestinationIP', 'TimeStamp', 'SourcePort', 'DestinationPort']
+
+# #zamieniamy Lable na 0 i 1 i 2
+
+    non_doh_temp['Label'] = non_doh_temp['Label'].replace('NonDoH', 0)
+    doh_temp['Label'] = doh_temp['Label'].replace('DoH', 1)
+    benign_temp['Label'] = benign_temp['Label'].replace('Benign', 1)
+    malicious_temp['Label'] = malicious_temp['Label'].replace('Malicious', 2)
+
+    merged_df = pd.concat([non_doh_temp, doh_temp, benign_temp, malicious_temp], ignore_index=True)
+
+    merged_df.drop(columns=columns_to_drop, inplace=True)
+    print(merged_df.shape[0])
+    print(merged_df.shape[1])
+    merged_df.to_csv('data/test_sample.csv', index=False)
 
 
 
+
+
+def main():
+    test_all_params()
+
+if __name__ == "__main__":
+    main()
