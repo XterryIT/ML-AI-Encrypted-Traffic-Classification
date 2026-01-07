@@ -4,5 +4,6 @@
 /models/*
 /data/*
 !models/.gitkeep
+!/models/hierarchy/
 !models/hierarchy/.gitkeep
 !data/.gitkeep
