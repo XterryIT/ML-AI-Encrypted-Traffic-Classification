@@ -34,7 +34,7 @@ def small_data_separate_params():
     merged_df.drop(columns=columns_to_drop, inplace=True)
     print(merged_df.shape[0])
     print(merged_df.shape[1])
-    merged_df.to_csv('data/train_sample.csv', index=False)
+    merged_df.to_csv('data/small_data_separate.csv', index=False)
 
 
 def small_data_all_params():
@@ -60,7 +60,7 @@ def small_data_all_params():
     merged_df.drop(columns=columns_to_drop, inplace=True)
     print(merged_df.shape[0])
     print(merged_df.shape[1])
-    merged_df.to_csv('data/train_sample.csv', index=False)
+    merged_df.to_csv('data/small_data_all.csv', index=False)
 # #Data Version 3 for AI 3 (Training data)
 
 def all_params():
@@ -86,7 +86,7 @@ def all_params():
     merged_df.drop(columns=columns_to_drop, inplace=True)
     print(merged_df.shape[0])
     print(merged_df.shape[1])
-    merged_df.to_csv('data/test_sample.csv', index=False)
+    merged_df.to_csv('data/all_params.csv', index=False)
 
 
 
