@@ -1,0 +1,13 @@
+--- Unsupervised Analysis: Hierarchical_Clustering ---
+Timestamp: 08012026_214005
+
+Metrics:
+Training Time: 36.94s
+Silhouette Score: Skipped (Data too large)
+Calinski-Harabasz: 5707.726864361961
+Clusters Count: 3
+
+Detailed Report:
+Clusters found: 3
+Labels found (IDs): [0 1 2]
+Distribution: {2: 12786, 1: 9295, 0: 7919}

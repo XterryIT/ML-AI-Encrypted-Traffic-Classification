@@ -1,0 +1,10 @@
+--- Unsupervised Analysis: PCA ---
+Timestamp: 08012026_214050
+
+Metrics:
+Training Time: 0.01s
+
+Detailed Report:
+Output shape: (30000, 2)
+Explained Variance Ratio: [0.19925452 0.17096221]
+Total Information Retained: 37.02%

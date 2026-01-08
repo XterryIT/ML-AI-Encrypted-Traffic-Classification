@@ -1,0 +1,8 @@
+--- Unsupervised Analysis: LLE ---
+Timestamp: 08012026_214053
+
+Metrics:
+Training Time: 0.26s
+
+Detailed Report:
+Output shape: (2000, 2)
