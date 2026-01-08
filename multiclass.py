@@ -218,7 +218,7 @@ def main():
     # defining classifiers
     models = [DecisionTreeClassifier(random_state=42),
               RandomForestClassifier(n_estimators=100, random_state=42),
-              LogisticRegression(max_iter=15000),
+              LogisticRegression(max_iter=1000),
               GaussianNB(),
               LinearSVC(dual=False, max_iter=10000),
               KNeighborsClassifier(n_neighbors=10),
