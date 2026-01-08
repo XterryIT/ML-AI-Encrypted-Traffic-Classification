@@ -153,16 +153,16 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
 
     timestamp = datetime.now().strftime("%d%m%Y_%H%M")
     if smote == False:
-        joblib.dump(model, f"models/{model_name}_multi_{timestamp}.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/{model_name}_features_multi_{timestamp}.joblib") # Save feature names
+        joblib.dump(model, f"models/multiclass/{model_name}_multi_{timestamp}.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/multiclass/{model_name}_features_multi_{timestamp}.joblib") # Save feature names
 
         print(f"SUCCESS: Model saved as '{model_name}_multi_{timestamp}.joblib'")
         print(f"SUCCESS: Feature list saved as '{model_name}_features_multi_{timestamp}.joblib'")
 
         print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
     elif smote == True:
-        joblib.dump(model, f"models/smote/{model_name}_multi_SMOTE_{timestamp}.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/smote/{model_name}_multi_SMOTE_features_{timestamp}.joblib") # Save feature names
+        joblib.dump(model, f"models/multiclass/smote/{model_name}_multi_SMOTE_{timestamp}.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/multiclass/smote/{model_name}_multi_SMOTE_features_{timestamp}.joblib") # Save feature names
 
         print(f"SUCCESS: Model saved as '{model_name}_multi_SMOTE_{timestamp}.joblib'")
         print(f"SUCCESS: Feature list saved as '{model_name}_multi_SMOTE_features_{timestamp}.joblib'")
