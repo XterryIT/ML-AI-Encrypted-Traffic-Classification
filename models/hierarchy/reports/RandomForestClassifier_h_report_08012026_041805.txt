@@ -1,0 +1,88 @@
+
+--- Results for: RandomForestClassifier ---
+Time spent on training: 373.07s
+
+Model Accuracy: 99.77%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               269189               139                    5
+Actual: Benign (1)                  644              5394                    1
+Actual: Malicious (2)                29                 2                74738
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      1.00      1.00    269333
+   Benign (1)       0.97      0.89      0.93      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           1.00    350141
+    macro avg       0.99      0.96      0.98    350141
+ weighted avg       1.00      1.00      1.00    350141
+
+
+Feature Importance for Stage 1:
+                                   Feature  Importance
+9                         PacketLengthMode    0.262222
+0                                 Duration    0.098091
+15                          PacketTimeMean    0.062389
+8                       PacketLengthMedian    0.056696
+1                            FlowBytesSent    0.051177
+13                      PacketTimeVariance    0.046176
+14             PacketTimeStandardDeviation    0.041039
+5                     PacketLengthVariance    0.038869
+7                         PacketLengthMean    0.036938
+11                PacketLengthSkewFromMode    0.034459
+3                        FlowBytesReceived    0.029850
+12      PacketLengthCoefficientofVariation    0.028837
+6            PacketLengthStandardDeviation    0.027745
+24                  ResponseTimeTimeMedian    0.027229
+4                         FlowReceivedRate    0.023111
+16                        PacketTimeMedian    0.021644
+2                             FlowSentRate    0.016767
+18                PacketTimeSkewFromMedian    0.013370
+28  ResponseTimeTimeCoefficientofVariation    0.011915
+23                    ResponseTimeTimeMean    0.011666
+10              PacketLengthSkewFromMedian    0.011541
+19                  PacketTimeSkewFromMode    0.008593
+22       ResponseTimeTimeStandardDeviation    0.008459
+20        PacketTimeCoefficientofVariation    0.006626
+27            ResponseTimeTimeSkewFromMode    0.006353
+25                    ResponseTimeTimeMode    0.006139
+17                          PacketTimeMode    0.004427
+26          ResponseTimeTimeSkewFromMedian    0.004230
+21                ResponseTimeTimeVariance    0.003442
+
+Feature Importance for Stage 2:
+                                   Feature  Importance
+9                         PacketLengthMode    0.218386
+3                        FlowBytesReceived    0.083497
+14             PacketTimeStandardDeviation    0.062321
+8                       PacketLengthMedian    0.058882
+15                          PacketTimeMean    0.058110
+7                         PacketLengthMean    0.052836
+1                            FlowBytesSent    0.051161
+13                      PacketTimeVariance    0.050446
+2                             FlowSentRate    0.039268
+16                        PacketTimeMedian    0.038466
+0                                 Duration    0.037368
+5                     PacketLengthVariance    0.035665
+6            PacketLengthStandardDeviation    0.035510
+4                         FlowReceivedRate    0.027180
+12      PacketLengthCoefficientofVariation    0.025612
+11                PacketLengthSkewFromMode    0.014477
+24                  ResponseTimeTimeMedian    0.012508
+10              PacketLengthSkewFromMedian    0.012126
+19                  PacketTimeSkewFromMode    0.011598
+22       ResponseTimeTimeStandardDeviation    0.010449
+20        PacketTimeCoefficientofVariation    0.010436
+18                PacketTimeSkewFromMedian    0.009751
+27            ResponseTimeTimeSkewFromMode    0.009214
+23                    ResponseTimeTimeMean    0.008018
+26          ResponseTimeTimeSkewFromMedian    0.006926
+21                ResponseTimeTimeVariance    0.006782
+28  ResponseTimeTimeCoefficientofVariation    0.005049
+17                          PacketTimeMode    0.004192
+25                    ResponseTimeTimeMode    0.003767
+Models saved as 'models/hierarchy//RandomForestClassifier_s1_h_08012026_041805.joblib', 'models/hierarchy//RandomForestClassifier_s2_h_08012026_041805.joblib'
+Feature list saved as 'models/hierarchy//RandomForestClassifier_h_features_08012026_041805.joblib'
