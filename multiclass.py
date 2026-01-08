@@ -177,14 +177,16 @@ def save_report(model, model_name, training_time, accuracy, cm_df, report, featu
     print(f"Report text file saved to: {report_path}") 
 
 def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote):
+    model_name = model.__class__.__name__
+
+    print(f"Starting {model_name} training...")
+
     start_time = time.time() # starting timer
     model.fit(x_train, y_train) # training the model
     end_time = time.time() # stopping the timer
 
-    # defining vars for prints and saves
-    model_name = model.__class__.__name__
+    print("Getting vars...")
     training_time = end_time - start_time # time spent on training
-
     y_pred = model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2]) # set labels to ensure [0, 1, 2] order in the matrix)
@@ -195,8 +197,10 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     feature_list = list(feature_names)
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
-    save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
+    print("Creating a ROC curve...")
     roc_curve_plot(model, x_test, y_test, smote)
+    print("Saving the report...")
+    save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
 
 def main():
 

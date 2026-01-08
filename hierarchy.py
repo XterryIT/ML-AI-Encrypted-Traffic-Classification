@@ -172,11 +172,16 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
     # Stage 1: Class 0(Non-DoH) vs {Class 1, 2} (DoH)
     # Stage 2: Class 1 (Benign) vs Class 2 (Malicious)
 
+    model_name = model_s1.__class__.__name__
+
+    print(f"Starting {model_name} training...")
+
     start_time = time.time() # starting timer
     model_s1.fit(x_train, y_train) # training the first model (DoH vs Non-DoH)
     model_s2.fit(x_train_s2, y_train_s2) # training the second model (Benign vs Malicious)
     end_time = time.time() # stopping the timer
-    model_name = model_s1.__class__.__name__
+
+    print("Getting vars...")
     feature_list = list(feature_names)
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     training_time = end_time - start_time # time spent on training
@@ -204,8 +209,10 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
     importance1 = feature_importance(model_s1, feature_names)
     importance2 = feature_importance(model_s2, feature_names)
 
-    save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp)
+    print("Creating a ROC curve...")
     roc_curve_plot(model_s1, model_s2, x_test, y_test)
+    print("Saving the report...")
+    save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp)
 
 def main():
 
