@@ -47,22 +47,19 @@ def prepare_data():
 
     return [x_train, x_train_s2, x_test, y_train_s1, y_train_s2, y_test, x]
 
-def feature_importance(model, feature_names, stage):
+def feature_importance(model, feature_names):
     importances = None
 
-    # for tree-based models (Random Forest, Decision Tree)
     if hasattr(model, 'feature_importances_'):
         importances = model.feature_importances_
     elif hasattr(model, 'coef_'): # for linear models (Logistic Regression, LDA, SGDClassifier)
         importances = np.mean(np.abs(model.coef_), axis=0)
 
-    # if importance scores were found
     if importances is not None:
-        fi_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances})  # create a DataFrame (combine feature names with their importance scores)
-        fi_df = fi_df.sort_values(by='Importance', ascending=False) # sort from most important to the least important
-        print(f"Top 10 features used by the model for {stage}:"); print(fi_df.head(10)) # print Top 10 most important features
-    else:
-        print("Feature Importance is not natively available or easily interpretable for this model.")
+        fi_df = pd.DataFrame({'Feature': feature_names,'Importance': importances}).sort_values(by='Importance', ascending=False)
+        return fi_df
+    
+    return None
 
 def roc_curve_plot(model_s1, model_s2, x_test, y_test):
     model_name = model_s1.__class__.__name__
@@ -138,10 +135,7 @@ def save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, 
 
     # open the report file and write/print simultaneously
     with open(report_path, "w") as f:
-        
-        # helper function to write to both console and file
         def log(text):
-            print(text)          # print to console
             f.write(text + "\n") # write to file with newline
 
         # start Logging
@@ -155,13 +149,16 @@ def save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, 
 
         # feature importance
         if (importance1 is not None) and (importance2 is not None):
-            log("\nFeature Importance:")
-            # check if importance is a dataframe or string before logging
-            if hasattr(importance1, 'to_string'): 
+            log("\nFeature Importance for Stage 1:")
+            if hasattr(importance1, 'to_string'):
                 log(importance1.to_string())
-                log(importance2.to_string())
             else:
                 log(str(importance1))
+                
+            log("\nFeature Importance for Stage 2:")
+            if hasattr(importance2, 'to_string'):
+                log(importance2.to_string())
+            else:
                 log(str(importance2))
         else:
             log("\nSkipping Feature Importance (Not applicable to this model class).")
@@ -204,13 +201,8 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
                              columns=['Pred: NonDoH (0)', 'Pred: Benign (1)', 'Pred: Malicious (2)'])
     report = classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)'])
 
-    # feature importance if supported
-    if hasattr(model_s1, 'feature_importances_') or hasattr(model_s1, 'coef_'):
-        importance1 = feature_importance(model_s1, feature_names, "Stage 1 (Non-DoH vs DoH)")
-        importance2 = feature_importance(model_s2, feature_names, "Stage 2 (Benign vs Malicious)")
-    else:
-        importance1 = None
-        importance2 = None
+    importance1 = feature_importance(model_s1, feature_names)
+    importance2 = feature_importance(model_s2, feature_names)
 
     save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp)
 

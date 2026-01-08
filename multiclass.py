@@ -60,32 +60,18 @@ def prepare_data():
 def feature_importance(model, feature_names):
     importances = None
 
-    # for tree-based models (Random Forest, Decision Tree)
+    importances = None
+
     if hasattr(model, 'feature_importances_'):
         importances = model.feature_importances_
-        print("Feature importance calculated using: model.feature_importances_")
-
-    # for linear models (Logistic Regression, LDA, SGDClassifier)
     elif hasattr(model, 'coef_'):
-        # for multi-class linear models, model.coef_ is (n_classes, n_features).
-        # taking the mean of the absolute coefficients across all classes.
         importances = np.mean(np.abs(model.coef_), axis=0)
-        print("Feature importance calculated using: np.mean(np.abs(model.coef_))")
 
-    # if importance scores were found
     if importances is not None:
-        # create a DataFrame (combine feature names with their importance scores)
-        feature_importance_df = pd.DataFrame({
-            'Feature': feature_names,
-            'Importance': importances
-        })
-
-        # sort from most important to the least important
-        feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
-        # print Top 10 most important features
-        print("Top 10 features used by the model:"); print(feature_importance_df.head(10))
-    else:
-        print("Feature Importance is not natively available or easily interpretable for this model.")
+        fi_df = pd.DataFrame({'Feature': feature_names,'Importance': importances}).sort_values(by='Importance', ascending=False)
+        return fi_df
+    
+    return None
 
 def roc_curve_plot(model, x_test, y_test, smote):
     model_name = model.__class__.__name__
@@ -163,10 +149,7 @@ def save_report(model, model_name, training_time, accuracy, cm_df, report, featu
 
     # open the report file and write/print simultaneously
     with open(report_path, "w") as f:
-        
-        # helper function to write to both console and file
         def log(text):
-            print(text)          # print to console
             f.write(text + "\n") # write to file with newline
 
         # start Logging
@@ -181,8 +164,7 @@ def save_report(model, model_name, training_time, accuracy, cm_df, report, featu
         # feature importance
         if importance is not None:
             log("\nFeature Importance:")
-            # check if importance is a dataframe or string before logging
-            if hasattr(importance, 'to_string'): 
+            if hasattr(importance, 'to_string'):
                 log(importance.to_string())
             else:
                 log(str(importance))
@@ -192,7 +174,7 @@ def save_report(model, model_name, training_time, accuracy, cm_df, report, featu
         log(f"Model saved as '{model_path}'")
         log(f"Feature list saved as '{feats_path}'")
 
-    print(f"Report text file saved to: {report_path}")
+    print(f"Report text file saved to: {report_path}") 
 
 def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote):
     start_time = time.time() # starting timer
@@ -209,12 +191,7 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     cm_df = pd.DataFrame(cm, index=['Actual: NonDoH (0)', 'Actual: Benign (1)', 'Actual: Malicious (2)'], # setting up matrix
                              columns=['Pred: NonDoH (0)', 'Pred: Benign (1)', 'Pred: Malicious (2)'])
     report = classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']) # setting up report
-
-    if hasattr(model, 'feature_importances_') or hasattr(model, 'coef_'):
-        importance = feature_importance(model, feature_names)
-    else:
-        importance = None
-
+    importance = feature_importance(model, feature_names)
     feature_list = list(feature_names)
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
