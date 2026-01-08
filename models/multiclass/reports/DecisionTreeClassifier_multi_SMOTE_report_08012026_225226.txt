@@ -1,0 +1,56 @@
+
+--- Results for: DecisionTreeClassifier (with SMOTE) ---
+Time spent on training: 77.37s
+
+Model Accuracy: 99.08%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               266639              2592                  102
+Actual: Benign (1)                  474              5550                   15
+Actual: Malicious (2)                31                 9                74729
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.99      0.99    269333
+   Benign (1)       0.68      0.92      0.78      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.89      0.97      0.93    350141
+ weighted avg       0.99      0.99      0.99    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+9                         PacketLengthMode    0.492519
+8                       PacketLengthMedian    0.139215
+7                         PacketLengthMean    0.108307
+16                        PacketTimeMedian    0.031659
+24                  ResponseTimeTimeMedian    0.030449
+23                    ResponseTimeTimeMean    0.030132
+0                                 Duration    0.025667
+1                            FlowBytesSent    0.016247
+12      PacketLengthCoefficientofVariation    0.016135
+3                        FlowBytesReceived    0.015757
+25                    ResponseTimeTimeMode    0.013532
+10              PacketLengthSkewFromMedian    0.013174
+20        PacketTimeCoefficientofVariation    0.010546
+15                          PacketTimeMean    0.008779
+28  ResponseTimeTimeCoefficientofVariation    0.007547
+2                             FlowSentRate    0.007139
+22       ResponseTimeTimeStandardDeviation    0.005782
+4                         FlowReceivedRate    0.005775
+18                PacketTimeSkewFromMedian    0.005547
+11                PacketLengthSkewFromMode    0.004421
+5                     PacketLengthVariance    0.002865
+6            PacketLengthStandardDeviation    0.002281
+19                  PacketTimeSkewFromMode    0.001440
+14             PacketTimeStandardDeviation    0.001170
+26          ResponseTimeTimeSkewFromMedian    0.001109
+21                ResponseTimeTimeVariance    0.000903
+17                          PacketTimeMode    0.000720
+13                      PacketTimeVariance    0.000638
+27            ResponseTimeTimeSkewFromMode    0.000543
+Model saved as 'models/multiclass//smote/DecisionTreeClassifier_multi_SMOTE_08012026_225226.joblib'
+Feature list saved as 'models/multiclass//smote/DecisionTreeClassifier_multi_SMOTE_features_08012026_225226.joblib'

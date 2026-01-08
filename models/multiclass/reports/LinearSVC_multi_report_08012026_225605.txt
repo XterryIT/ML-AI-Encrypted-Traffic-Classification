@@ -1,0 +1,56 @@
+
+--- Results for: LinearSVC ---
+Time spent on training: 56.37s
+
+Model Accuracy: 91.48%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               259517                13                 9803
+Actual: Benign (1)                 5010                16                 1013
+Actual: Malicious (2)             13995                10                60764
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.93      0.96      0.95    269333
+   Benign (1)       0.41      0.00      0.01      6039
+Malicious (2)       0.85      0.81      0.83     74769
+
+     accuracy                           0.91    350141
+    macro avg       0.73      0.59      0.59    350141
+ weighted avg       0.91      0.91      0.91    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+5                     PacketLengthVariance    6.647142
+6            PacketLengthStandardDeviation    4.042917
+7                         PacketLengthMean    2.299617
+24                  ResponseTimeTimeMedian    1.537421
+0                                 Duration    0.777863
+13                      PacketTimeVariance    0.553442
+12      PacketLengthCoefficientofVariation    0.319724
+14             PacketTimeStandardDeviation    0.299485
+10              PacketLengthSkewFromMedian    0.282859
+8                       PacketLengthMedian    0.263989
+28  ResponseTimeTimeCoefficientofVariation    0.254084
+3                        FlowBytesReceived    0.185020
+15                          PacketTimeMean    0.179943
+11                PacketLengthSkewFromMode    0.157491
+1                            FlowBytesSent    0.155998
+22       ResponseTimeTimeStandardDeviation    0.154690
+2                             FlowSentRate    0.153005
+27            ResponseTimeTimeSkewFromMode    0.125748
+25                    ResponseTimeTimeMode    0.124446
+16                        PacketTimeMedian    0.117424
+26          ResponseTimeTimeSkewFromMedian    0.111668
+20        PacketTimeCoefficientofVariation    0.070947
+17                          PacketTimeMode    0.051669
+23                    ResponseTimeTimeMean    0.049482
+18                PacketTimeSkewFromMedian    0.048929
+9                         PacketLengthMode    0.048118
+19                  PacketTimeSkewFromMode    0.032945
+21                ResponseTimeTimeVariance    0.030000
+4                         FlowReceivedRate    0.018986
+Model saved as 'models/multiclass//LinearSVC_multi_08012026_225605.joblib'
+Feature list saved as 'models/multiclass//LinearSVC_multi_features_08012026_225605.joblib'

@@ -1,0 +1,56 @@
+
+--- Results for: DecisionTreeClassifier ---
+Time spent on training: 35.38s
+
+Model Accuracy: 99.61%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               268700               571                   62
+Actual: Benign (1)                  666              5366                    7
+Actual: Malicious (2)                51                 7                74711
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      1.00      1.00    269333
+   Benign (1)       0.90      0.89      0.90      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           1.00    350141
+    macro avg       0.97      0.96      0.96    350141
+ weighted avg       1.00      1.00      1.00    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+9                         PacketLengthMode    0.785661
+15                          PacketTimeMean    0.064610
+0                                 Duration    0.031065
+24                  ResponseTimeTimeMedian    0.014544
+12      PacketLengthCoefficientofVariation    0.012984
+8                       PacketLengthMedian    0.012126
+25                    ResponseTimeTimeMode    0.010385
+5                     PacketLengthVariance    0.009947
+7                         PacketLengthMean    0.009673
+1                            FlowBytesSent    0.007075
+14             PacketTimeStandardDeviation    0.006368
+3                        FlowBytesReceived    0.005457
+16                        PacketTimeMedian    0.005187
+2                             FlowSentRate    0.004983
+11                PacketLengthSkewFromMode    0.003933
+4                         FlowReceivedRate    0.003652
+10              PacketLengthSkewFromMedian    0.002677
+6            PacketLengthStandardDeviation    0.001601
+18                PacketTimeSkewFromMedian    0.001504
+23                    ResponseTimeTimeMean    0.001185
+22       ResponseTimeTimeStandardDeviation    0.001128
+19                  PacketTimeSkewFromMode    0.000960
+28  ResponseTimeTimeCoefficientofVariation    0.000884
+20        PacketTimeCoefficientofVariation    0.000665
+13                      PacketTimeVariance    0.000564
+26          ResponseTimeTimeSkewFromMedian    0.000422
+21                ResponseTimeTimeVariance    0.000347
+27            ResponseTimeTimeSkewFromMode    0.000337
+17                          PacketTimeMode    0.000075
+Model saved as 'models/multiclass//DecisionTreeClassifier_multi_08012026_225107.joblib'
+Feature list saved as 'models/multiclass//DecisionTreeClassifier_multi_features_08012026_225107.joblib'

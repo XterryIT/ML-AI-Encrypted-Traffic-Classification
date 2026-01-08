@@ -1,0 +1,26 @@
+
+--- Results for: KNeighborsClassifier ---
+Time spent on training: 0.07s
+
+Model Accuracy: 98.91%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               267586               414                 1333
+Actual: Benign (1)                 1130              4705                  204
+Actual: Malicious (2)               694                48                74027
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.99      0.99      0.99    269333
+   Benign (1)       0.91      0.78      0.84      6039
+Malicious (2)       0.98      0.99      0.98     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.96      0.92      0.94    350141
+ weighted avg       0.99      0.99      0.99    350141
+
+
+Skipping Feature Importance (Not applicable to this model class).
+Model saved as 'models/multiclass//KNeighborsClassifier_multi_08012026_230103.joblib'
+Feature list saved as 'models/multiclass//KNeighborsClassifier_multi_features_08012026_230103.joblib'
