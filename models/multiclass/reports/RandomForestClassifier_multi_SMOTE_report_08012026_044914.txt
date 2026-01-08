@@ -1,0 +1,56 @@
+
+--- Results for: RandomForestClassifier (with SMOTE) ---
+Time spent on training: 998.35s
+
+Model Accuracy: 99.45%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               267763              1563                    7
+Actual: Benign (1)                  336              5701                    2
+Actual: Malicious (2)                25                 7                74737
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.99      1.00    269333
+   Benign (1)       0.78      0.94      0.86      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.93      0.98      0.95    350141
+ weighted avg       1.00      0.99      0.99    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+9                         PacketLengthMode    0.175099
+8                       PacketLengthMedian    0.087703
+7                         PacketLengthMean    0.085970
+5                     PacketLengthVariance    0.060524
+24                  ResponseTimeTimeMedian    0.057421
+1                            FlowBytesSent    0.052133
+0                                 Duration    0.051973
+6            PacketLengthStandardDeviation    0.050155
+3                        FlowBytesReceived    0.044667
+12      PacketLengthCoefficientofVariation    0.037810
+15                          PacketTimeMean    0.034561
+14             PacketTimeStandardDeviation    0.031086
+13                      PacketTimeVariance    0.027946
+11                PacketLengthSkewFromMode    0.026834
+10              PacketLengthSkewFromMedian    0.026182
+16                        PacketTimeMedian    0.022463
+4                         FlowReceivedRate    0.021520
+2                             FlowSentRate    0.017191
+25                    ResponseTimeTimeMode    0.013075
+23                    ResponseTimeTimeMean    0.012967
+18                PacketTimeSkewFromMedian    0.011839
+19                  PacketTimeSkewFromMode    0.010735
+28  ResponseTimeTimeCoefficientofVariation    0.010020
+20        PacketTimeCoefficientofVariation    0.009501
+22       ResponseTimeTimeStandardDeviation    0.005864
+26          ResponseTimeTimeSkewFromMedian    0.005105
+21                ResponseTimeTimeVariance    0.003927
+17                          PacketTimeMode    0.002985
+27            ResponseTimeTimeSkewFromMode    0.002746
+Model saved as 'models/multiclass//smote/RandomForestClassifier_multi_SMOTE_08012026_044914.joblib'
+Feature list saved as 'models/multiclass//smote/RandomForestClassifier_multi_SMOTE_features_08012026_044914.joblib'

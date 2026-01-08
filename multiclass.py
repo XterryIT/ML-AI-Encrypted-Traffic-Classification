@@ -1,3 +1,6 @@
+from sklearnex import patch_sklearn
+patch_sklearn()
+
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -6,6 +9,7 @@ import joblib
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from imblearn.over_sampling import SMOTE
@@ -13,7 +17,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
@@ -31,7 +35,6 @@ def prepare_data():
 
     # fill any missing values (NaN) with 0
     df.fillna(0, inplace=True)
-
     # separating label and statistics
     x = df.drop(['Label'], axis=1)
     y = df['Label']
@@ -42,6 +45,11 @@ def prepare_data():
 
     # split data for training and testing
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=300)
+
+    # scaling (good for svm, knn, mlp)
+    scaler = StandardScaler()
+    x_train = pd.DataFrame(scaler.fit_transform(x_train), columns = x.columns)
+    x_test = pd.DataFrame(scaler.transform(x_test), columns=x.columns)
 
     ############ SMOTE ############
     print("\nApplying SMOTE (Oversampling) to the training data...")
@@ -212,7 +220,7 @@ def main():
               RandomForestClassifier(n_estimators=100, random_state=42),
               LogisticRegression(max_iter=15000),
               GaussianNB(),
-              SVC(kernel='rbf', random_state=42),
+              LinearSVC(dual=False, max_iter=10000),
               KNeighborsClassifier(n_neighbors=10),
               LinearDiscriminantAnalysis(),
               QuadraticDiscriminantAnalysis(),
