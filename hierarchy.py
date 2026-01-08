@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
 import time
 import joblib
 from sklearn.base import clone
 from sklearn.metrics import roc_curve, auc
+from sklearn.preprocessing import LabelBinarizer
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
@@ -17,7 +19,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 def prepare_data():
     try:
-        df = pd.read_csv('data/sample.csv')
+        df = pd.read_csv('data/all_params.csv')
     except FileNotFoundError:
         print("ERROR: File not found!")
         return
@@ -69,40 +71,57 @@ def roc_curve_plot(model_s1, model_s2, x_test, y_test):
     if not (hasattr(model_s1, 'predict_proba')):
         print(f"Skipping ROC plot: Model {model_name} lacks 'predict_proba' or 'decision_function'.")
         return
+
+    # calculate system-wide probabilities ---
+    p_s1 = model_s1.predict_proba(x_test) # probabilities from s1 (NonDoH vs DoH)
+    prob_nondoh = p_s1[:, 0]       # P(NonDoH)
+    prob_doh_branch = p_s1[:, 1]   # P(DoH) -> Pass to Stage 2
+
+    p_s2 = model_s2.predict_proba(x_test) # probabilities from s2 (Benign vs Malicious)
+    prob_benign_given_doh = p_s2[:, 0]    # P(Benign | DoH)
+    prob_malicious_given_doh = p_s2[:, 1] # P(Malicious | DoH)
+
+    # calculate final scores for each class
+    score_0 = prob_nondoh # NonDoH
+    score_1 = prob_doh_branch * prob_benign_given_doh # Benign (Must be DoH AND Benign)
+    score_2 = prob_doh_branch * prob_malicious_given_doh # Malicious (Must be DoH AND Malicious)
+    y_score_system = np.column_stack((score_0, score_1, score_2)) # stacking into a matrix: (n_samples, 3)
+
+    # prepare ground truth (One-vs-Rest)p
+    lb = LabelBinarizer()
+    lb.fit([0, 1, 2]) # explicitly set classes to ensure [0, 1, 2] order
+    y_test_binarized = lb.transform(y_test)
     
-    y_test_s1 = y_test.copy().replace({2: 1}) # stage 1: actual binary Labels (0 vs 1/2)
-    mask_s2 = (y_test == 1) | (y_test == 2) 
-    x_test_s2 = x_test[mask_s2]
-    y_test_s2 = y_test[mask_s2] # stage 2: actual binary labels (1 vs 2) - filter test set
-    
-    plt.figure(figsize=(12, 5))
+    # plotting
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    class_names = ['NonDoH (0)', 'Benign (1)', 'Malicious (2)']
 
-    # subplot 1: stage 1 roc
-    plt.subplot(1, 2, 1)
-    # getting the prediction scores (probabilities or decision scores)
-    if hasattr(model_s1, "predict_proba"):
-        y_score_s1 = model_s1.predict_proba(x_test)[:, 1]
-        fpr1, tpr1, _ = roc_curve(y_test_s1, y_score_s1)
-        roc_auc1 = auc(fpr1, tpr1)
-        plt.plot(fpr1, tpr1, label=f'Stage 1 (AUC = {roc_auc1:.2f})')
+    plt.figure(figsize=(8, 6)) # single figure
 
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.title(f'{model_name} Stage 1: DoH vs Non-DoH')
+    for i in range(3): # loop through all 3 classes
+        fpr[i], tpr[i], _ = roc_curve(y_test_binarized[:, i], y_score_system[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
+
+        plt.plot(fpr[i], tpr[i],
+                 label=f'{class_names[i]} (AUC = {roc_auc[i]:.2f})',
+                 linewidth=2)
+
+    # Plot settings
+    plt.plot([0, 1], [0, 1], 'k--', linewidth=1, label='Chance (AUC = 0.50)')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(f'Hierarchical System ROC for {model_name} (OvR)')
     plt.legend(loc="lower right")
+    plt.grid(True)
 
-    # subplot 2: stage 2 ROC
-    plt.subplot(1, 2, 2)
-    if hasattr(model_s2, "predict_proba") and not x_test_s2.empty:
-        y_score2 = model_s2.predict_proba(x_test_s2)[:, 1]
-        # Map labels to 0 and 1 for the ROC function (1->0, 2->1)
-        fpr2, tpr2, _ = roc_curve(y_test_s2, y_score2, pos_label=2)
-        roc_auc2 = auc(fpr2, tpr2)
-        plt.plot(fpr2, tpr2, color='orange', label=f'Stage 2 (AUC = {roc_auc2:.2f})')
-
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.title(f'{model_name} Stage 2: Benign vs Malicious')
-    plt.legend(loc="lower right")
-    plt.show()
+    # save the plot
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
+    plt.savefig(f"roc/hierarchy/{model_name}_{timestamp}.png", dpi=300, bbox_inches='tight')
+    print(f"Combined ROC plot saved to: 'roc/hierarchy/{model_name}_{timestamp}.png'")
 
 def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_train_s2, y_test, feature_names):
     """
@@ -118,13 +137,14 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
     # printitng out model name for visibility
     model_name = model_s1.__class__.__name__
     feature_list = list(feature_names)
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
 
-    joblib.dump(model_s1, f"models/hierarchy/{model_name}_s1_multiclass.joblib") # Save the TRAINED OBJECT
-    joblib.dump(model_s2, f"models/hierarchy/{model_name}_s2_multiclass.joblib")
-    joblib.dump(feature_list, f"models/hierarchy/{model_name}_features.joblib") # Save feature names
+    joblib.dump(model_s1, f"models/hierarchy/{model_name}_s1_{timestamp}.joblib") # Save the TRAINED OBJECT
+    joblib.dump(model_s2, f"models/hierarchy/{model_name}_s2_{timestamp}.joblib")
+    joblib.dump(feature_list, f"models/hierarchy/{model_name}_features_h_{timestamp}.joblib") # Save feature names
 
-    print(f"SUCCESS: Model saved as '{model_name}_s[1/2]_multiclass.joblib'")
-    print(f"SUCCESS: Feature list saved as '{model_name}_features.joblib'")
+    print(f"SUCCESS: Model saved as '{model_name}_s[1/2]_{timestamp}.joblib'")
+    print(f"SUCCESS: Feature list saved as '{model_name}_features_h_{timestamp}.joblib'")
 
     print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
 

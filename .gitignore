@@ -1,9 +1,9 @@
 /CSVs
 /.idea/*
 /.venv/*
-/models/*
+#/models/*
 /data/*
+#/roc/*
 !models/.gitkeep
-!/models/hierarchy/
 !models/hierarchy/.gitkeep
 !data/.gitkeep

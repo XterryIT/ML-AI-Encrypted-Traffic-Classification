@@ -21,7 +21,7 @@ def parsing(n, columns_to_drop):
         benign_temp = df_benign.copy()
         malicious_temp = df_malicious.copy()
 
-    mapping = {'Benign': 1, 'Malicious': 2, 'NonDoH': 0}
+    mapping = {'NonDoH': 0, 'Benign': 1, 'Malicious': 2}
 
     non_doh_temp['Label'] = non_doh_temp['Label'].map(mapping)
     benign_temp['Label'] = benign_temp['Label'].map(mapping)

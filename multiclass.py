@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
 import time
 import joblib
 from sklearn.preprocessing import LabelBinarizer
@@ -23,7 +24,7 @@ from sklearn.neural_network import MLPClassifier
 
 def prepare_data():
     try:
-        df = pd.read_csv('data/sample.csv')
+        df = pd.read_csv('data/all_params.csv')
     except FileNotFoundError:
         print("ERROR: File not found!")
         return
@@ -124,19 +125,22 @@ def roc_curve_plot(model, x_test, y_test, smote):
                  label=f'{class_names[i]} (AUC = {roc_auc[i]:.2f})',
                  linewidth=2)
 
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
+
     # plot settings
     plt.plot([0, 1], [0, 1], 'k--', linewidth=1, label='Chance (AUC = 0.50)')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    if smote:
-        plt.title(f'ROC Curve for {model_name} (with SMOTE) (OvR)')
-    else:
-        plt.title(f'ROC Curve for {model_name} (OvR)')
     plt.legend(loc="lower right")
     plt.grid(True)
-    plt.show()
+    if smote:
+        plt.title(f'ROC Curve for {model_name} (with SMOTE) (OvR)')
+        plt.savefig(f"roc/multiclass/smote/{model_name}_smote_{timestamp}.png", dpi=300)
+    else:
+        plt.title(f'ROC Curve for {model_name} (OvR)')
+        plt.savefig(f"roc/multiclass/{model_name}_{timestamp}.png", dpi=300)
 
 def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote):
     start_time = time.time() # starting timer
@@ -147,20 +151,21 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     model_name = model.__class__.__name__
     feature_list = list(feature_names)
 
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
     if smote == False:
-        joblib.dump(model, f"models/{model_name}_multiclass.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/{model_name}_features.joblib") # Save feature names
+        joblib.dump(model, f"models/{model_name}_multi_{timestamp}.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/{model_name}_features_multi_{timestamp}.joblib") # Save feature names
 
-        print(f"SUCCESS: Model saved as '{model_name}_multiclass.joblib'")
-        print(f"SUCCESS: Feature list saved as '{model_name}_features.joblib'")
+        print(f"SUCCESS: Model saved as '{model_name}_multi_{timestamp}.joblib'")
+        print(f"SUCCESS: Feature list saved as '{model_name}_features_multi_{timestamp}.joblib'")
 
         print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
     elif smote == True:
-        joblib.dump(model, f"models/{model_name}_SMOTE_multiclass.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/{model_name}_SMOTE_features.joblib") # Save feature names
+        joblib.dump(model, f"models/smote/{model_name}_multi_SMOTE_{timestamp}.joblib") # Save the TRAINED OBJECT
+        joblib.dump(feature_list, f"models/smote/{model_name}_multi_SMOTE_features_{timestamp}.joblib") # Save feature names
 
-        print(f"SUCCESS: Model saved as '{model_name}_SMOTE_multiclass.joblib'")
-        print(f"SUCCESS: Feature list saved as '{model_name}_SMOTE_features.joblib'")
+        print(f"SUCCESS: Model saved as '{model_name}_multi_SMOTE_{timestamp}.joblib'")
+        print(f"SUCCESS: Feature list saved as '{model_name}_multi_SMOTE_features_{timestamp}.joblib'")
 
         print(f"\n--- Results for: {model_name} (with SMOTE) ---") # printitng out model name for visibility
 
@@ -206,7 +211,7 @@ def main():
 
     for model in models:
         model_training(model, data[0], data[1], data[2], data[3], data[4].columns, False) # training and printing results out
-        #model_training(model, smote_data[0], smote_data[1], smote_data[2], smote_data[3], smote_data[4].columns, True) # training and printing results out with SMOTEd data
+        model_training(model, smote_data[0], smote_data[1], smote_data[2], smote_data[3], smote_data[4].columns, True) # training and printing results out with SMOTEd data
 
 
 if __name__ == "__main__":
