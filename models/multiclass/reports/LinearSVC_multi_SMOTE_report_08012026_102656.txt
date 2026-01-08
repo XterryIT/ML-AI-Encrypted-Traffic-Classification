@@ -1,0 +1,56 @@
+
+--- Results for: LinearSVC (with SMOTE) ---
+Time spent on training: 236.68s
+
+Model Accuracy: 77.75%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               201194             39279                28860
+Actual: Benign (1)                  654              4478                  907
+Actual: Malicious (2)              4824              3389                66556
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.97      0.75      0.85    269333
+   Benign (1)       0.09      0.74      0.17      6039
+Malicious (2)       0.69      0.89      0.78     74769
+
+     accuracy                           0.78    350141
+    macro avg       0.59      0.79      0.60    350141
+ weighted avg       0.90      0.78      0.82    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+5                     PacketLengthVariance    5.931609
+6            PacketLengthStandardDeviation    5.383839
+7                         PacketLengthMean    2.483866
+24                  ResponseTimeTimeMedian    2.331305
+12      PacketLengthCoefficientofVariation    1.015085
+8                       PacketLengthMedian    0.732004
+25                    ResponseTimeTimeMode    0.551790
+14             PacketTimeStandardDeviation    0.431686
+0                                 Duration    0.416699
+13                      PacketTimeVariance    0.385739
+10              PacketLengthSkewFromMedian    0.342352
+27            ResponseTimeTimeSkewFromMode    0.308984
+2                             FlowSentRate    0.252022
+15                          PacketTimeMean    0.202990
+22       ResponseTimeTimeStandardDeviation    0.192560
+28  ResponseTimeTimeCoefficientofVariation    0.181775
+1                            FlowBytesSent    0.179458
+23                    ResponseTimeTimeMean    0.177244
+16                        PacketTimeMedian    0.165264
+26          ResponseTimeTimeSkewFromMedian    0.161913
+3                        FlowBytesReceived    0.160470
+11                PacketLengthSkewFromMode    0.142256
+19                  PacketTimeSkewFromMode    0.126553
+20        PacketTimeCoefficientofVariation    0.087857
+9                         PacketLengthMode    0.071582
+18                PacketTimeSkewFromMedian    0.061130
+4                         FlowReceivedRate    0.052157
+21                ResponseTimeTimeVariance    0.051242
+17                          PacketTimeMode    0.046193
+Model saved as 'models/multiclass//smote/LinearSVC_multi_SMOTE_08012026_102656.joblib'
+Feature list saved as 'models/multiclass//smote/LinearSVC_multi_SMOTE_features_08012026_102656.joblib'

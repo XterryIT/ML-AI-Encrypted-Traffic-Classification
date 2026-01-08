@@ -1,0 +1,56 @@
+
+--- Results for: LogisticRegression (with SMOTE) ---
+Time spent on training: 14.29s
+
+Model Accuracy: 80.56%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               211156             30383                27794
+Actual: Benign (1)                  657              4616                  766
+Actual: Malicious (2)              4615              3852                66302
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.98      0.78      0.87    269333
+   Benign (1)       0.12      0.76      0.21      6039
+Malicious (2)       0.70      0.89      0.78     74769
+
+     accuracy                           0.81    350141
+    macro avg       0.60      0.81      0.62    350141
+ weighted avg       0.90      0.81      0.84    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+5                     PacketLengthVariance   20.760791
+24                  ResponseTimeTimeMedian   15.250075
+6            PacketLengthStandardDeviation   14.853973
+2                             FlowSentRate    8.597782
+7                         PacketLengthMean    7.341599
+3                        FlowBytesReceived    2.774712
+25                    ResponseTimeTimeMode    2.545108
+12      PacketLengthCoefficientofVariation    2.101333
+1                            FlowBytesSent    2.015037
+8                       PacketLengthMedian    1.445266
+28  ResponseTimeTimeCoefficientofVariation    0.952452
+14             PacketTimeStandardDeviation    0.882075
+0                                 Duration    0.833054
+13                      PacketTimeVariance    0.817439
+10              PacketLengthSkewFromMedian    0.649112
+23                    ResponseTimeTimeMean    0.591351
+4                         FlowReceivedRate    0.523734
+22       ResponseTimeTimeStandardDeviation    0.498120
+27            ResponseTimeTimeSkewFromMode    0.371251
+26          ResponseTimeTimeSkewFromMedian    0.366724
+19                  PacketTimeSkewFromMode    0.247493
+9                         PacketLengthMode    0.193676
+15                          PacketTimeMean    0.191109
+16                        PacketTimeMedian    0.181735
+21                ResponseTimeTimeVariance    0.172565
+11                PacketLengthSkewFromMode    0.145035
+20        PacketTimeCoefficientofVariation    0.130769
+18                PacketTimeSkewFromMedian    0.112319
+17                          PacketTimeMode    0.046880
+Model saved as 'models/multiclass//smote/LogisticRegression_multi_SMOTE_08012026_102151.joblib'
+Feature list saved as 'models/multiclass//smote/LogisticRegression_multi_SMOTE_features_08012026_102151.joblib'
