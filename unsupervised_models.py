@@ -1,6 +1,5 @@
 from sklearnex import patch_sklearn
 patch_sklearn()
-
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -9,20 +8,16 @@ import joblib
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-# Preprocessing
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-
-# Metrics (Unsupervised)
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
-
-# Clustering Algorithms
-from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+from sklearn.preprocessing import StandardScaler, MinMaxScaler # Preprocessing
+from sklearn.metrics import silhouette_score, calinski_harabasz_score # Metrics (Unsupervised)
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN # Clustering Algorithms
 from sklearn.ensemble import IsolationForest # Tree-based (Anomaly Detection)
 
 # Dimensionality Reduction / Manifold Learning
 from sklearn.decomposition import PCA, NMF
 from sklearn.manifold import LocallyLinearEmbedding
+
+
 
 # --- SETTINGS ---
 BASE_DIR = "models/unsupervised"
@@ -30,18 +25,19 @@ os.makedirs(f"{BASE_DIR}/plots", exist_ok=True)
 os.makedirs(f"{BASE_DIR}/reports", exist_ok=True)
 os.makedirs(f"{BASE_DIR}/objects", exist_ok=True)
 
+
+
 def prepare_data():
     """
     Loads data. Returns scaled versions.
-    Unsupervised learning is VERY sensitive to scaling.
     """
     try:
-        # Check filename here!
         df = pd.read_csv('data/10000_all_params.csv')
     except FileNotFoundError:
         print("ERROR: File '10000_all_params.csv' not found!")
         return None
 
+    # Basic cleaning
     df.fillna(0, inplace=True)
     
     # separating label just for visualization comparison later
@@ -59,9 +55,9 @@ def prepare_data():
     scaler_mm = MinMaxScaler()
     x_mm = pd.DataFrame(scaler_mm.fit_transform(x), columns=x.columns)
 
-    # Note: Removed Binarizer (x_bin) as we deleted FP-Growth
-
     return x_std, x_mm, y, x.columns
+
+
 
 def plot_2d_projection(x_data, labels, model_name, timestamp, method="PCA"):
     """
@@ -91,6 +87,8 @@ def plot_2d_projection(x_data, labels, model_name, timestamp, method="PCA"):
     plt.savefig(f"{BASE_DIR}/plots/{model_name}_projection_{timestamp}.png", dpi=300)
     plt.close()
 
+
+
 def save_report(model_name, metrics, report_text, timestamp):
     path = f"{BASE_DIR}/reports/{model_name}_report_{timestamp}.txt"
     with open(path, "w") as f:
@@ -102,6 +100,8 @@ def save_report(model_name, metrics, report_text, timestamp):
         f.write("\nDetailed Report:\n")
         f.write(report_text)
     print(f"Report saved: {path}")
+
+
 
 def run_clustering(model, x_data, model_name):
     """
@@ -166,6 +166,7 @@ def run_clustering(model, x_data, model_name):
     joblib.dump(model, f"{BASE_DIR}/objects/{model_name}_{timestamp}.joblib")
 
 
+
 def run_dim_reduction(model, x_data, y_true_labels, model_name):
     """
     Logic for PCA, NMF, LLE.
@@ -213,6 +214,8 @@ def run_dim_reduction(model, x_data, y_true_labels, model_name):
 
     metrics = {"Training Time": f"{duration:.2f}s"}
     save_report(model_name, metrics, report, timestamp)
+
+
 
 def main():
     # 1. Prepare Data
