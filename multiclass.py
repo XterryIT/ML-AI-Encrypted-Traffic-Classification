@@ -198,7 +198,6 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
 
     roc_curve_plot(model, x_test, y_test, smote)
-    print("-" * 100)
 
 def main():
 
