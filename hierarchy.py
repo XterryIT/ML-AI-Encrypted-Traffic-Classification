@@ -120,37 +120,69 @@ def roc_curve_plot(model_s1, model_s2, x_test, y_test):
 
     # save the plot
     timestamp = datetime.now().strftime("%d%m%Y_%H%M")
-    plt.savefig(f"roc/hierarchy/{model_name}_{timestamp}.png", dpi=300, bbox_inches='tight')
-    print(f"Combined ROC plot saved to: 'roc/hierarchy/{model_name}_{timestamp}.png'")
+    plt.savefig(f"models/hierarchy/roc/{model_name}_{timestamp}.png", dpi=300, bbox_inches='tight')
+
+def save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp):
+    # file paths
+    base_dir = "models/hierarchy/"
+    report_path = f"{base_dir}/reports/{model_name}_h_report_{timestamp}.txt"
+    model1_path = f"{base_dir}/{model_name}_s1_h_{timestamp}.joblib"
+    model2_path = f"{base_dir}/{model_name}_s2_h_{timestamp}.joblib"
+    feats_path = f"{base_dir}/{model_name}_h_features_{timestamp}.joblib"
+    header = f"\n--- Results for: {model_name} ---" # header text
+
+    # save the model and feature list
+    joblib.dump(model_s1, model1_path)
+    joblib.dump(model_s2, model2_path)
+    joblib.dump(feature_list, feats_path)
+
+    # open the report file and write/print simultaneously
+    with open(report_path, "w") as f:
+        
+        # helper function to write to both console and file
+        def log(text):
+            print(text)          # print to console
+            f.write(text + "\n") # write to file with newline
+
+        # start Logging
+        log(header)
+        log(f"Time spent on training: {training_time:.2f}s")
+        log(f"\nModel Accuracy: {accuracy * 100:.2f}%")
+        log("Confusion Matrix: (3x3)")
+        log(cm_df.to_string()) 
+        log("\nClassification Report (0=NonDoH, 1=Benign, 2=Malicious):")
+        log(report)
+
+        # feature importance
+        if (importance1 is not None) and (importance2 is not None):
+            log("\nFeature Importance:")
+            # check if importance is a dataframe or string before logging
+            if hasattr(importance1, 'to_string'): 
+                log(importance1.to_string())
+                log(importance2.to_string())
+            else:
+                log(str(importance1))
+                log(str(importance2))
+        else:
+            log("\nSkipping Feature Importance (Not applicable to this model class).")
+        
+        log(f"Models saved as '{model1_path}', '{model2_path}'")
+        log(f"Feature list saved as '{feats_path}'")
+
+    print(f"Report text file saved to: {report_path}")
 
 def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_train_s2, y_test, feature_names):
-    """
-    Stage 1: Class 0(Non-DoH) vs {Class 1, 2} (DoH)
-    Stage 2: Class 1 (Benign) vs Class 2 (Malicious)
-    """
+    # Stage 1: Class 0(Non-DoH) vs {Class 1, 2} (DoH)
+    # Stage 2: Class 1 (Benign) vs Class 2 (Malicious)
 
     start_time = time.time() # starting timer
     model_s1.fit(x_train, y_train) # training the first model (DoH vs Non-DoH)
     model_s2.fit(x_train_s2, y_train_s2) # training the second model (Benign vs Malicious)
     end_time = time.time() # stopping the timer
-
-    # printitng out model name for visibility
     model_name = model_s1.__class__.__name__
     feature_list = list(feature_names)
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
-
-    joblib.dump(model_s1, f"models/hierarchy/{model_name}_s1_{timestamp}.joblib") # Save the TRAINED OBJECT
-    joblib.dump(model_s2, f"models/hierarchy/{model_name}_s2_{timestamp}.joblib")
-    joblib.dump(feature_list, f"models/hierarchy/{model_name}_features_h_{timestamp}.joblib") # Save feature names
-
-    print(f"SUCCESS: Model saved as '{model_name}_s[1/2]_{timestamp}.joblib'")
-    print(f"SUCCESS: Feature list saved as '{model_name}_features_h_{timestamp}.joblib'")
-
-    print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
-
-    # time spent on training
-    training_time = end_time - start_time
-    print(f"Time spent on training: {training_time:.2f}s")
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+    training_time = end_time - start_time # time spent on training
 
     pred_s1 = model_s1.predict(x_test) # predict stage 1 (DoH or not?)
     y_pred = np.zeros(len(x_test), dtype=int) # create final prediction array (default to 0)
@@ -168,18 +200,19 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
     # setting matrix and report
     accuracy = accuracy_score(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2]) # set labels to ensure [0, 1, 2] order in the matrix)
+    cm_df = pd.DataFrame(cm, index=['Actual: NonDoH (0)', 'Actual: Benign (1)', 'Actual: Malicious (2)'], # setting up matrix
+                             columns=['Pred: NonDoH (0)', 'Pred: Benign (1)', 'Pred: Malicious (2)'])
+    report = classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']))
 
-    print(f"\nModel Accuracy: {accuracy * 100:.2f}%"); print("Confusion Matrix: (3x3)"); print(cm)
-    print("\nClassification Report (0=NonDoH, 1=Benign, 2=Malicious):")
-    print(classification_report(y_test, y_pred, labels=[0, 1, 2],
-                                target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']))
-
-    # Feature Importance if supported
+    # feature importance if supported
     if hasattr(model_s1, 'feature_importances_') or hasattr(model_s1, 'coef_'):
-        feature_importance(model_s1, feature_names, "Stage 1 (Non-DoH vs DoH)")
-        feature_importance(model_s2, feature_names, "Stage 2 (Benign vs Malicious)")
+        importance1 = feature_importance(model_s1, feature_names, "Stage 1 (Non-DoH vs DoH)")
+        importance2 = feature_importance(model_s2, feature_names, "Stage 2 (Benign vs Malicious)")
     else:
-        print("\nSkipping Feature Importance (Not applicable to this model class).")
+        importance1 = None
+        importance2 = None
+
+    save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp)
 
     roc_curve_plot(model_s1, model_s2, x_test, y_test)
     print("-" * 100)

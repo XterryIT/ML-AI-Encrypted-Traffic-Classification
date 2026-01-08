@@ -137,10 +137,62 @@ def roc_curve_plot(model, x_test, y_test, smote):
     plt.grid(True)
     if smote:
         plt.title(f'ROC Curve for {model_name} (with SMOTE) (OvR)')
-        plt.savefig(f"roc/multiclass/smote/{model_name}_smote_{timestamp}.png", dpi=300)
+        plt.savefig(f"models/multiclass/roc/{model_name}_smote_{timestamp}.png", dpi=300)
     else:
         plt.title(f'ROC Curve for {model_name} (OvR)')
-        plt.savefig(f"roc/multiclass/{model_name}_{timestamp}.png", dpi=300)
+        plt.savefig(f"models/multiclass/roc/{model_name}_{timestamp}.png", dpi=300)
+
+def save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote):
+    base_dir = "models/multiclass/"
+    if smote:
+        # file paths
+        report_path = f"{base_dir}/reports/{model_name}_multi_SMOTE_report_{timestamp}.txt"
+        model_path = f"{base_dir}/smote/{model_name}_multi_SMOTE_{timestamp}.joblib"
+        feats_path = f"{base_dir}/smote/{model_name}_multi_SMOTE_features_{timestamp}.joblib"
+        header = f"\n--- Results for: {model_name} (with SMOTE) ---" # header text
+    else:
+        # file paths
+        report_path = f"{base_dir}/reports/{model_name}_multi_report_{timestamp}.txt"
+        model_path = f"{base_dir}/{model_name}_multi_{timestamp}.joblib"
+        feats_path = f"{base_dir}/{model_name}_multi_features_{timestamp}.joblib"
+        header = f"\n--- Results for: {model_name} ---" # header text
+
+    # save the model and feature list
+    joblib.dump(model, model_path)
+    joblib.dump(feature_list, feats_path)
+
+    # open the report file and write/print simultaneously
+    with open(report_path, "w") as f:
+        
+        # helper function to write to both console and file
+        def log(text):
+            print(text)          # print to console
+            f.write(text + "\n") # write to file with newline
+
+        # start Logging
+        log(header)
+        log(f"Time spent on training: {training_time:.2f}s")
+        log(f"\nModel Accuracy: {accuracy * 100:.2f}%")
+        log("Confusion Matrix: (3x3)")
+        log(cm_df.to_string()) 
+        log("\nClassification Report (0=NonDoH, 1=Benign, 2=Malicious):")
+        log(report)
+
+        # feature importance
+        if importance is not None:
+            log("\nFeature Importance:")
+            # check if importance is a dataframe or string before logging
+            if hasattr(importance, 'to_string'): 
+                log(importance.to_string())
+            else:
+                log(str(importance))
+        else:
+            log("\nSkipping Feature Importance (Not applicable to this model class).")
+        
+        log(f"Model saved as '{model_path}'")
+        log(f"Feature list saved as '{feats_path}'")
+
+    print(f"Report text file saved to: {report_path}")
 
 def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote):
     start_time = time.time() # starting timer
@@ -149,46 +201,24 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
 
     # defining vars for prints and saves
     model_name = model.__class__.__name__
-    feature_list = list(feature_names)
-
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
-    if smote == False:
-        joblib.dump(model, f"models/multiclass/{model_name}_multi_{timestamp}.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/multiclass/{model_name}_features_multi_{timestamp}.joblib") # Save feature names
-
-        print(f"SUCCESS: Model saved as '{model_name}_multi_{timestamp}.joblib'")
-        print(f"SUCCESS: Feature list saved as '{model_name}_features_multi_{timestamp}.joblib'")
-
-        print(f"\n--- Results for: {model_name} ---") # printitng out model name for visibility
-    elif smote == True:
-        joblib.dump(model, f"models/multiclass/smote/{model_name}_multi_SMOTE_{timestamp}.joblib") # Save the TRAINED OBJECT
-        joblib.dump(feature_list, f"models/multiclass/smote/{model_name}_multi_SMOTE_features_{timestamp}.joblib") # Save feature names
-
-        print(f"SUCCESS: Model saved as '{model_name}_multi_SMOTE_{timestamp}.joblib'")
-        print(f"SUCCESS: Feature list saved as '{model_name}_multi_SMOTE_features_{timestamp}.joblib'")
-
-        print(f"\n--- Results for: {model_name} (with SMOTE) ---") # printitng out model name for visibility
-
-    # time spent on training
-    training_time = end_time - start_time
-    print(f"Time spent on training: {training_time:.2f}s")
+    training_time = end_time - start_time # time spent on training
 
     y_pred = model.predict(x_test)
-
-    # setting matrix and report
     accuracy = accuracy_score(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2]) # set labels to ensure [0, 1, 2] order in the matrix)
+    cm_df = pd.DataFrame(cm, index=['Actual: NonDoH (0)', 'Actual: Benign (1)', 'Actual: Malicious (2)'], # setting up matrix
+                             columns=['Pred: NonDoH (0)', 'Pred: Benign (1)', 'Pred: Malicious (2)'])
+    report = classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']) # setting up report
 
-    print(f"\nModel Accuracy: {accuracy * 100:.2f}%"); print("Confusion Matrix: (3x3)"); print(cm)
-    print("\nClassification Report (0=NonDoH, 1=Benign, 2=Malicious):")
-    print(classification_report(y_test, y_pred, labels=[0, 1, 2],
-                                target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']))
-
-    # Feature Importance if supported
     if hasattr(model, 'feature_importances_') or hasattr(model, 'coef_'):
-        feature_importance(model, feature_names)
+        importance = feature_importance(model, feature_names)
     else:
-        print("\nSkipping Feature Importance (Not applicable to this model class).")
+        importance = None
+
+    feature_list = list(feature_names)
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+
+    save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
 
     roc_curve_plot(model, x_test, y_test, smote)
     print("-" * 100)

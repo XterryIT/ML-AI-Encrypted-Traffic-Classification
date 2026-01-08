@@ -6,15 +6,12 @@
 !data/.gitkeep
 
 /models/hierarchy/*
+!/models/hierarchy/reports/
+!/models/hierarchy/roc
 !/models/hierarchy/.gitkeep
 /models/multiclass/*
+!/models/multiclass/reports/
+!/models/multiclass/roc
 !/models/multiclass/smote/
 /models/multiclass/smote/*
 !models/multiclass/smote/.gitkeep
-
-/roc/hierarchy/*
-!/roc/hierarchy/.gitkeep
-/roc/multiclass/*
-!/roc/multiclass/smote/
-/roc/multiclass/smote/*
-!/roc/multiclass/smote/.gitkeep
