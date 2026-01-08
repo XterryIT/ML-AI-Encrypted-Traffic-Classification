@@ -196,7 +196,6 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
     save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
-
     roc_curve_plot(model, x_test, y_test, smote)
 
 def main():

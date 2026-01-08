@@ -205,7 +205,6 @@ def model_training(model_s1, model_s2, x_train, x_train_s2, x_test, y_train, y_t
     importance2 = feature_importance(model_s2, feature_names)
 
     save_report(model_s1, model_s2, model_name, training_time, accuracy, cm_df, report, feature_list, importance1, importance2, timestamp)
-
     roc_curve_plot(model_s1, model_s2, x_test, y_test)
 
 def main():
