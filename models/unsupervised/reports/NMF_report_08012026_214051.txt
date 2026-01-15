@@ -1,9 +1,0 @@
---- Unsupervised Analysis: NMF ---
-Timestamp: 08012026_214051
-
-Metrics:
-Training Time: 0.51s
-
-Detailed Report:
-Output shape: (30000, 2)
-Reconstruction Error: 101.62496711522404
