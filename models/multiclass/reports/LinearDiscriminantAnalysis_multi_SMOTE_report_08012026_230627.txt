@@ -1,0 +1,56 @@
+
+--- Results for: LinearDiscriminantAnalysis (with SMOTE) ---
+Time spent on training: 5.44s
+
+Model Accuracy: 73.29%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               190789             50291                28253
+Actual: Benign (1)                  836              4180                 1023
+Actual: Malicious (2)              6022              7107                61640
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.97      0.71      0.82    269333
+   Benign (1)       0.07      0.69      0.12      6039
+Malicious (2)       0.68      0.82      0.74     74769
+
+     accuracy                           0.73    350141
+    macro avg       0.57      0.74      0.56    350141
+ weighted avg       0.89      0.73      0.79    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+6            PacketLengthStandardDeviation    3.614949
+12      PacketLengthCoefficientofVariation    1.803082
+5                     PacketLengthVariance    1.334504
+7                         PacketLengthMean    1.175159
+13                      PacketTimeVariance    0.874218
+14             PacketTimeStandardDeviation    0.690808
+0                                 Duration    0.618733
+10              PacketLengthSkewFromMedian    0.608129
+27            ResponseTimeTimeSkewFromMode    0.571113
+26          ResponseTimeTimeSkewFromMedian    0.520531
+16                        PacketTimeMedian    0.428177
+8                       PacketLengthMedian    0.427088
+15                          PacketTimeMean    0.418686
+24                  ResponseTimeTimeMedian    0.341017
+11                PacketLengthSkewFromMode    0.323173
+19                  PacketTimeSkewFromMode    0.266685
+22       ResponseTimeTimeStandardDeviation    0.258079
+20        PacketTimeCoefficientofVariation    0.241483
+25                    ResponseTimeTimeMode    0.233183
+23                    ResponseTimeTimeMean    0.210638
+18                PacketTimeSkewFromMedian    0.145135
+1                            FlowBytesSent    0.144675
+9                         PacketLengthMode    0.116906
+17                          PacketTimeMode    0.115689
+2                             FlowSentRate    0.096660
+21                ResponseTimeTimeVariance    0.088688
+28  ResponseTimeTimeCoefficientofVariation    0.082777
+4                         FlowReceivedRate    0.057929
+3                        FlowBytesReceived    0.007959
+Model saved as 'models/multiclass//smote/LinearDiscriminantAnalysis_multi_SMOTE_08012026_230627.joblib'
+Feature list saved as 'models/multiclass//smote/LinearDiscriminantAnalysis_multi_SMOTE_features_08012026_230627.joblib'

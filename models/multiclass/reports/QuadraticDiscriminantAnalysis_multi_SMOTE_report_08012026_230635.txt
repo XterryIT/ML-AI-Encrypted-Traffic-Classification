@@ -1,0 +1,26 @@
+
+--- Results for: QuadraticDiscriminantAnalysis (with SMOTE) ---
+Time spent on training: 4.76s
+
+Model Accuracy: 45.40%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)                85675            149131                34527
+Actual: Benign (1)                  173              5356                  510
+Actual: Malicious (2)               361              6459                67949
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.99      0.32      0.48    269333
+   Benign (1)       0.03      0.89      0.06      6039
+Malicious (2)       0.66      0.91      0.76     74769
+
+     accuracy                           0.45    350141
+    macro avg       0.56      0.70      0.44    350141
+ weighted avg       0.91      0.45      0.54    350141
+
+
+Skipping Feature Importance (Not applicable to this model class).
+Model saved as 'models/multiclass//smote/QuadraticDiscriminantAnalysis_multi_SMOTE_08012026_230635.joblib'
+Feature list saved as 'models/multiclass//smote/QuadraticDiscriminantAnalysis_multi_SMOTE_features_08012026_230635.joblib'

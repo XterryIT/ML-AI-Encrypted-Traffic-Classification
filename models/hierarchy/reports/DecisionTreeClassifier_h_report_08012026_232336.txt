@@ -1,0 +1,88 @@
+
+--- Results for: DecisionTreeClassifier ---
+Time spent on training: 34.86s
+
+Model Accuracy: 99.61%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               268669               601                   63
+Actual: Benign (1)                  646              5389                    4
+Actual: Malicious (2)                56                 2                74711
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      1.00      1.00    269333
+   Benign (1)       0.90      0.89      0.90      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           1.00    350141
+    macro avg       0.97      0.96      0.96    350141
+ weighted avg       1.00      1.00      1.00    350141
+
+
+Feature Importance for Stage 1:
+                                   Feature  Importance
+9                         PacketLengthMode    0.782645
+15                          PacketTimeMean    0.067138
+3                        FlowBytesReceived    0.018538
+5                     PacketLengthVariance    0.017722
+7                         PacketLengthMean    0.017558
+1                            FlowBytesSent    0.012575
+24                  ResponseTimeTimeMedian    0.011396
+14             PacketTimeStandardDeviation    0.009986
+0                                 Duration    0.009194
+12      PacketLengthCoefficientofVariation    0.007624
+13                      PacketTimeVariance    0.005407
+22       ResponseTimeTimeStandardDeviation    0.004230
+8                       PacketLengthMedian    0.004063
+2                             FlowSentRate    0.004050
+6            PacketLengthStandardDeviation    0.004006
+23                    ResponseTimeTimeMean    0.003420
+16                        PacketTimeMedian    0.003417
+25                    ResponseTimeTimeMode    0.003178
+18                PacketTimeSkewFromMedian    0.002497
+28  ResponseTimeTimeCoefficientofVariation    0.002492
+4                         FlowReceivedRate    0.001866
+10              PacketLengthSkewFromMedian    0.001750
+19                  PacketTimeSkewFromMode    0.001383
+11                PacketLengthSkewFromMode    0.001172
+17                          PacketTimeMode    0.000840
+20        PacketTimeCoefficientofVariation    0.000660
+26          ResponseTimeTimeSkewFromMedian    0.000622
+21                ResponseTimeTimeVariance    0.000304
+27            ResponseTimeTimeSkewFromMode    0.000267
+
+Feature Importance for Stage 2:
+                                   Feature  Importance
+15                          PacketTimeMean    0.253566
+3                        FlowBytesReceived    0.244654
+8                       PacketLengthMedian    0.209165
+9                         PacketLengthMode    0.206409
+4                         FlowReceivedRate    0.040255
+24                  ResponseTimeTimeMedian    0.012409
+11                PacketLengthSkewFromMode    0.007701
+12      PacketLengthCoefficientofVariation    0.006226
+5                     PacketLengthVariance    0.004710
+0                                 Duration    0.004672
+16                        PacketTimeMedian    0.002400
+1                            FlowBytesSent    0.001779
+14             PacketTimeStandardDeviation    0.001392
+10              PacketLengthSkewFromMedian    0.001127
+13                      PacketTimeVariance    0.000963
+18                PacketTimeSkewFromMedian    0.000645
+20        PacketTimeCoefficientofVariation    0.000312
+22       ResponseTimeTimeStandardDeviation    0.000285
+25                    ResponseTimeTimeMode    0.000276
+7                         PacketLengthMean    0.000253
+17                          PacketTimeMode    0.000195
+19                  PacketTimeSkewFromMode    0.000172
+6            PacketLengthStandardDeviation    0.000156
+23                    ResponseTimeTimeMean    0.000122
+21                ResponseTimeTimeVariance    0.000078
+2                             FlowSentRate    0.000074
+26          ResponseTimeTimeSkewFromMedian    0.000000
+27            ResponseTimeTimeSkewFromMode    0.000000
+28  ResponseTimeTimeCoefficientofVariation    0.000000
+Models saved as 'models/hierarchy//DecisionTreeClassifier_s1_h_08012026_232336.joblib', 'models/hierarchy//DecisionTreeClassifier_s2_h_08012026_232336.joblib'
+Feature list saved as 'models/hierarchy//DecisionTreeClassifier_h_features_08012026_232336.joblib'

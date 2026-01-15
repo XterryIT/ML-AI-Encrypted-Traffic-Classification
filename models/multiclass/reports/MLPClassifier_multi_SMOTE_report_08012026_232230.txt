@@ -1,0 +1,26 @@
+
+--- Results for: MLPClassifier (with SMOTE) ---
+Time spent on training: 715.83s
+
+Model Accuracy: 97.86%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               262501              6227                  605
+Actual: Benign (1)                  297              5713                   29
+Actual: Malicious (2)               221               114                74434
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.97      0.99    269333
+   Benign (1)       0.47      0.95      0.63      6039
+Malicious (2)       0.99      1.00      0.99     74769
+
+     accuracy                           0.98    350141
+    macro avg       0.82      0.97      0.87    350141
+ weighted avg       0.99      0.98      0.98    350141
+
+
+Skipping Feature Importance (Not applicable to this model class).
+Model saved as 'models/multiclass//smote/MLPClassifier_multi_SMOTE_08012026_232230.joblib'
+Feature list saved as 'models/multiclass//smote/MLPClassifier_multi_SMOTE_features_08012026_232230.joblib'

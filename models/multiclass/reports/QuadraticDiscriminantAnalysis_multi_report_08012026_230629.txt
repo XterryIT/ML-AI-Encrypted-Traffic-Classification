@@ -1,0 +1,26 @@
+
+--- Results for: QuadraticDiscriminantAnalysis ---
+Time spent on training: 1.94s
+
+Model Accuracy: 48.05%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)                93257            135868                40208
+Actual: Benign (1)                  235              5180                  624
+Actual: Malicious (2)               794              4173                69802
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.99      0.35      0.51    269333
+   Benign (1)       0.04      0.86      0.07      6039
+Malicious (2)       0.63      0.93      0.75     74769
+
+     accuracy                           0.48    350141
+    macro avg       0.55      0.71      0.44    350141
+ weighted avg       0.90      0.48      0.56    350141
+
+
+Skipping Feature Importance (Not applicable to this model class).
+Model saved as 'models/multiclass//QuadraticDiscriminantAnalysis_multi_08012026_230629.joblib'
+Feature list saved as 'models/multiclass//QuadraticDiscriminantAnalysis_multi_features_08012026_230629.joblib'

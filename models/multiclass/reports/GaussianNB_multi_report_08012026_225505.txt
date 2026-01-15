@@ -1,0 +1,26 @@
+
+--- Results for: GaussianNB ---
+Time spent on training: 0.39s
+
+Model Accuracy: 51.66%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               112348            120016                36969
+Actual: Benign (1)                  252              4909                  878
+Actual: Malicious (2)              3480              7649                63640
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.97      0.42      0.58    269333
+   Benign (1)       0.04      0.81      0.07      6039
+Malicious (2)       0.63      0.85      0.72     74769
+
+     accuracy                           0.52    350141
+    macro avg       0.54      0.69      0.46    350141
+ weighted avg       0.88      0.52      0.60    350141
+
+
+Skipping Feature Importance (Not applicable to this model class).
+Model saved as 'models/multiclass//GaussianNB_multi_08012026_225505.joblib'
+Feature list saved as 'models/multiclass//GaussianNB_multi_features_08012026_225505.joblib'
