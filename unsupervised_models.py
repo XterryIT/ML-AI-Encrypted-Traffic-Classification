@@ -91,9 +91,10 @@ def visualization(X_scaled, cluster_labels, y_true, model_name):
     
     plt.tight_layout()
     plt.savefig(file_path)
-    print(f"✅ Saved to: {file_path}")
+
 
     # --- SHOW WINDOW SECOND ---
+    print(f"Showing plot ")
     plt.show() 
     
     # Clear memory
