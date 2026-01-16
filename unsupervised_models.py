@@ -51,42 +51,57 @@ def get_models_dict():
 
 def interpret_clusters(X_scaled, cluster_labels, scaler, feature_names, model_name):
     """
-    Funkcja oblicza średnie wartości parametrów dla każdego klastra
-    i przywraca je do oryginalnych jednostek (np. bajty, sekundy).
+    Analizuje, które parametry są najważniejsze (dominujące) dla każdego klastra.
+    Sortuje parametry według odchylenia od normy.
     """
-    print(f"\n--- Interpretacja Klastrów (Centroide) dla {model_name} ---")
+    print(f"\n--- Interpretacja Cech Dominujących dla {model_name} ---")
     
-    # Tworzymy tymczasowy DataFrame ze skalowanymi danymi
-    df_temp = pd.DataFrame(X_scaled, columns=feature_names)
-    df_temp['Cluster'] = cluster_labels
+    # 1. Tworzymy DataFrame ze skalowanymi danymi (To są "Z-Scores")
+    df_scaled = pd.DataFrame(X_scaled, columns=feature_names)
+    df_scaled['Cluster'] = cluster_labels
     
-    # 1. Obliczamy średnie (centroidy) dla każdego klastra
-    # (Wciąż w skali standardowej)
-    means_scaled = df_temp.groupby('Cluster').mean()
+    # 2. Obliczamy średnie dla klastrów (w skali standardowej)
+    # Jeśli wartość wynosi 0, oznacza to "średnią globalną".
+    # Im dalej od 0 (np. 5.0 lub -3.0), tym ważniejsza jest cecha.
+    means_scaled = df_scaled.groupby('Cluster').mean()
     
-    # 2. Odwracamy skalowanie (Inverse Transform)
-    # Żeby zobaczyć prawdziwe liczby (np. Port 80, a nie 0.54)
-    try:
-        means_original = scaler.inverse_transform(means_scaled)
+    # 3. Odwracamy skalowanie, żeby pokazać użytkownikowi prawdziwe liczby w nawiasie
+    means_original = pd.DataFrame(
+        scaler.inverse_transform(means_scaled), 
+        columns=feature_names, 
+        index=means_scaled.index
+    )
+
+    print("\n[TOP 5 CECH DOMINUJĄCYCH DLA KAŻDEGO KLASTRA]")
+    print("(Wartość skazująca: Siła wpływu cechy. Prawdziwa wartość w nawiasie)")
+    print("-" * 60)
+
+    # Przechodzimy przez każdy klaster
+    for cluster_id in means_scaled.index:
+        print(f"\n>>> Klaster {cluster_id}:")
         
-        # Tworzymy czytelną tabelę
-        df_means = pd.DataFrame(means_original, columns=feature_names, index=means_scaled.index)
+        # Sortujemy cechy według wartości bezwzględnej w skali standardowej
+        # (Największe odchylenie od 0 = Najważniejsza cecha)
+        cluster_row = means_scaled.loc[cluster_id]
         
-        # Transponujemy (.T), żeby klastry były kolumnami (łatwiej czytać wiele parametrów)
-        report_df = df_means.T
+        # Bierzemy 5 najważniejszych cech
+        top_features = cluster_row.abs().sort_values(ascending=False).head(5)
         
-        # Wyświetlamy pierwsze 5 parametrów w konsoli dla podglądu
-        print("\n[TOP 5 PARAMETRÓW - ŚREDNIE WARTOŚCI (Oryginalne Jednostki)]")
-        print(report_df.head(5))
-        
-        # Zapisujemy pełną tabelę do CSV, bo parametrów jest dużo
-        safe_name = model_name.replace(" ", "_").replace("(", "").replace(")", "")
-        csv_path = f"{OUTPUT_DIR}/{safe_name}_interpretation.csv"
-        report_df.to_csv(csv_path)
-        print(f"✅ Pełna tabela średnich zapisana do: {csv_path}")
-        
-    except Exception as e:
-        print(f"⚠️ Nie można zinterpretować klastrów (np. dla LOF/DBSCAN z samym szumem): {e}")
+        for feature_name, impact_score in top_features.items():
+            # impact_score - jak bardzo cecha wyróżnia się na tle innych (skalowana)
+            # real_value - prawdziwa wartość (np. liczba bajtów)
+            real_value = means_original.loc[cluster_id, feature_name]
+            
+            # Określamy kierunek (Powyżej czy Poniżej średniej)
+            direction = "WYSOKI" if cluster_row[feature_name] > 0 else "NISKI"
+            
+            print(f"   • {feature_name:<25} | Wpływ: {impact_score:>5.2f} ({direction}) | Średnia: {real_value:.2f}")
+
+    # Zapis pełnego raportu do CSV (Opcjonalnie)
+    safe_name = model_name.replace(" ", "_")
+    csv_path = f"{OUTPUT_DIR}/{safe_name}_features.csv"
+    means_original.T.to_csv(csv_path)
+    print(f"\nPełna tabela średnich zapisana do: {csv_path}")
 
 def analyze_clusters(cluster_labels, y_true, model_name):
     print(f"\n--- Analiza dla: {model_name} ---")
@@ -103,16 +118,6 @@ def analyze_clusters(cluster_labels, y_true, model_name):
     df_analysis = pd.DataFrame({'Cluster': cluster_labels, 'Is_Attack': y_true})
     stats = df_analysis.groupby('Cluster')['Is_Attack'].agg(['count', 'mean'])
 
-    print(f"\n{'ID':<5} | {'Rozmiar':<8} | {'% Ataków':<10} | {'WERDYKT'}")
-    print("-" * 65)
-
-    for cluster_id, row in stats.iterrows():
-        percent = row['mean'] * 100
-        if percent > 95: verdict = "🔴 CZYSTY ATAK"
-        elif percent > 50: verdict = "🟠 MIESZANY (Wysokie Ryzyko)"
-        elif percent > 5: verdict = "🔵 MIESZANY (Szum)"
-        else: verdict = "🟢 CZYSTA NORMA"
-        print(f"{cluster_id:<5} | {int(row['count']):<8} | {percent:>6.1f}%   | {verdict}")
 
 def visualization(X_scaled, cluster_labels, y_true, model_name):
     print(f"--- Przetwarzanie wykresu dla {model_name} ---")
@@ -155,9 +160,9 @@ def visualization(X_scaled, cluster_labels, y_true, model_name):
     
     plt.tight_layout()
     plt.savefig(file_path)
-    print(f"✅ Zapisano wykres do: {file_path}")
+    print(f"Zapisano wykres do: {file_path}")
 
-    print(f"👀 Wyświetlanie wykresu... (Zamknij okno, aby kontynuować)")
+    print(f"Wyświetlanie wykresu... (Zamknij okno, aby kontynuować)")
     plt.show() 
     plt.close()
 
@@ -192,7 +197,7 @@ def main():
         except Exception as e:
             print(f"Nie udało się uruchomić {name}: {e}")
             
-    print(f"\n🎉 Gotowe! Sprawdź folder: {os.path.abspath(OUTPUT_DIR)}")
+    print(f"\nGotowe! Sprawdź folder: {os.path.abspath(OUTPUT_DIR)}")
 
 if __name__ == "__main__":
     main()
