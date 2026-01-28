@@ -11,6 +11,8 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import adjusted_rand_score, confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 # --- KONFIGURACJA ---
 FILE_PATH = 'data/10000_chosen_params.csv'
@@ -48,6 +50,8 @@ def get_models_dict():
         "DBSCAN": DBSCAN(eps=3.0, min_samples=10),
         "LOF": LocalOutlierFactor(n_neighbors=20, contamination=0.1)
     }
+
+
 
 def interpret_clusters(X_scaled, cluster_labels, scaler, feature_names, model_name):
     """
@@ -104,19 +108,80 @@ def interpret_clusters(X_scaled, cluster_labels, scaler, feature_names, model_na
     print(f"\nPełna tabela średnich zapisana do: {csv_path}")
 
 def analyze_clusters(cluster_labels, y_true, model_name):
-    print(f"\n--- Analiza dla: {model_name} ---")
+    print(f"\n--- Szczegółowy Raport Analityczny: {model_name} ---")
     
-    # 1. Obliczenie Macierzy Pomyłek (Confusion Matrix)
+    # --- KROK 1: Mapowanie klastrów na klasy (0 lub 1) w celu oceny modelu ---
+    # Tworzymy słownik: {ID_Klastra: Dominująca_Klasa}
+    # Jeśli w klastrze jest więcej ataków niż normy -> traktujemy klaster jako ATAK (1)
+    df_map = pd.DataFrame({'Cluster': cluster_labels, 'True_Label': y_true})
+    cluster_to_class_map = {}
+    
+    for c_id in df_map['Cluster'].unique():
+        # Znajdź najczęstszą etykietę w tym klastrze (tryb/mode)
+        dominant = df_map[df_map['Cluster'] == c_id]['True_Label'].mode()[0]
+        cluster_to_class_map[c_id] = dominant
+
+    # Tworzymy wektor przewidywań przetłumaczony na 0 i 1
+    y_pred_mapped = np.array([cluster_to_class_map[label] for label in cluster_labels])
+
+    # --- KROK 2: Obliczenie Globalnych Metryk ---
+    precision = precision_score(y_true, y_pred_mapped, zero_division=0)
+    recall = recall_score(y_true, y_pred_mapped, zero_division=0) # Czułość
+    f1 = f1_score(y_true, y_pred_mapped, zero_division=0)
+
+    # --- KROK 3: Wyświetlenie Macierzy Pomyłek ---
     cm = confusion_matrix(y_true, cluster_labels)
-    
-    print("\n[MACIERZ POMYŁEK]")
-    print("Wiersze: Klasy rzeczywiste (0=Norma, 1=Atak)")
-    print("Kolumny: Numery klastrów")
+    print("\n[MACIERZ POMYŁEK / CONFUSION MATRIX]")
+    print("Interpretacja: Wiersze to klasy rzeczywiste (0=Norma, 1=Atak).")
+    print("               Kolumny to numery klastrów przydzielone przez algorytm.")
     print(cm)
 
-    # 2. Szczegółowa analiza (Profilowanie)
-    df_analysis = pd.DataFrame({'Cluster': cluster_labels, 'Is_Attack': y_true})
-    stats = df_analysis.groupby('Cluster')['Is_Attack'].agg(['count', 'mean'])
+    # --- KROK 4: Profilowanie Klastrów (Tabela szczegółowa) ---
+    stats = df_map.groupby('Cluster')['True_Label'].agg(['count', 'mean'])
+
+    print(f"\n[INTERPRETACJA KLASTRÓW]")
+    print(f"{'ID':<5} | {'Rozmiar':<8} | {'% Ataków':<10} | {'DIAGNOZA I ZALECENIE'}")
+    print("-" * 100)
+
+    for cluster_id, row in stats.iterrows():
+        count = int(row['count'])
+        percent = row['mean'] * 100
+        
+        if percent > 95:
+            description = "Wykryto profil ataku (Wysoka precyzja)."
+        elif percent < 5:
+            description = "Ruch bezpieczny (Profil normatywny)."
+        elif percent > 50:
+            description = "Klaster silnie zanieczyszczony atakami (Wysokie Ryzyko)."
+        else:
+            description = "Klaster niejednoznaczny. Ataki ukryte w ruchu normalnym."
+
+        print(f"{cluster_id:<5} | {count:<8} | {percent:>6.1f}%   | {description}")
+        print(f"{'':<5} | {'':<8} | {'':<10}")
+        print("-" * 100)
+
+    # --- KROK 5: OGÓLNA OCENA MODELU (Nowa sekcja) ---
+    print(f"\n[OGÓLNA OCENA MODELU: {model_name}]")
+    
+    print(f"2. Precyzja (Precision):   {precision:.4f}")
+    print(f"   (Gdy model zgłasza atak, na ile jest to wiarygodne? Ochrona przed fałszywymi alarmami.)")
+    
+    print(f"3. Czułość (Recall):       {recall:.4f}")
+    print(f"   (Jaki procent prawdziwych ataków został wykryty? Ochrona przed przepuszczeniem ataku.)")
+    
+    print(f"4. Wynik F1 (F1-Score):    {f1:.4f}")
+    print(f"   (Średnia harmoniczna precyzji i czułości. Najlepsza miara ogólna.)")
+
+    # Werdykt tekstowy na podstawie F1
+    if f1 > 0.90:
+        model_verdict = "Model BARDZO DOBRY. Skutecznie separuje ataki."
+    elif f1 > 0.70:
+        model_verdict = "Model PRZECIĘTNY. Wymaga optymalizacji parametrów."
+    else:
+        model_verdict = "Model NIEDOSTATECZNY. Niezdolny do poprawnej separacji w obecnej konfiguracji."
+        
+    print(f"\nKONKLUZJA: {model_verdict}")
+    print("=" * 100)
 
 
 def visualization(X_scaled, cluster_labels, y_true, model_name):
@@ -190,7 +255,7 @@ def main():
             
             # 2. NOWOŚĆ: Interpretacja parametrów (Co to za ruch?)
             interpret_clusters(X_scaled, labels, scaler, feature_names, name)
-            
+
             # 3. Wizualizacja
             visualization(X_scaled, labels, y_true, name)
 
