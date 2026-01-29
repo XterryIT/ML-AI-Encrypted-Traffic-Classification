@@ -1,0 +1,40 @@
+
+--- Results for: KNeighborsClassifier (with SMOTE) ---
+Time spent on training: 1.61s
+
+Model Accuracy: 97.42%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               261404              5475                 2454
+Actual: Benign (1)                  410              5527                  102
+Actual: Malicious (2)               342               254                74173
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.97      0.98    269333
+   Benign (1)       0.49      0.92      0.64      6039
+Malicious (2)       0.97      0.99      0.98     74769
+
+     accuracy                           0.97    350141
+    macro avg       0.82      0.96      0.87    350141
+ weighted avg       0.98      0.97      0.98    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+0                                 Duration    0.143524
+4       PacketLengthCoefficientofVariation    0.122190
+6              PacketTimeStandardDeviation    0.122190
+5                       PacketTimeVariance    0.103524
+9                 PacketTimeSkewFromMedian    0.090857
+2                         PacketLengthMean    0.088857
+1            PacketLengthStandardDeviation    0.086857
+10        PacketTimeCoefficientofVariation    0.075524
+3               PacketLengthSkewFromMedian    0.062857
+7                           PacketTimeMean    0.062190
+12  ResponseTimeTimeCoefficientofVariation    0.061524
+8                         PacketTimeMedian    0.049524
+11          ResponseTimeTimeSkewFromMedian    0.030857
+Model saved as 'models/multiclass/smote/KNeighborsClassifier_multi_SMOTE_25012026_211854.joblib'
+Feature list saved as 'models/multiclass/smote/KNeighborsClassifier_multi_SMOTE_features_25012026_211854.joblib'

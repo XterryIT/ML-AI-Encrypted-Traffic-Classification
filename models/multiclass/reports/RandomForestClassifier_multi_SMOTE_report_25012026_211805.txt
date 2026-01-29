@@ -1,0 +1,40 @@
+
+--- Results for: RandomForestClassifier (with SMOTE) ---
+Time spent on training: 48.35s
+
+Model Accuracy: 99.36%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               267452              1874                    7
+Actual: Benign (1)                  334              5700                    5
+Actual: Malicious (2)                19                 0                74750
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.99      1.00    269333
+   Benign (1)       0.75      0.94      0.84      6039
+Malicious (2)       1.00      1.00      1.00     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.92      0.98      0.94    350141
+ weighted avg       0.99      0.99      0.99    350141
+
+
+Feature Importance:
+                               Feature  Importance
+7                     PacketLengthMode    0.231870
+5                     PacketLengthMean    0.093977
+12              ResponseTimeTimeMedian    0.082912
+6                   PacketLengthMedian    0.081934
+4        PacketLengthStandardDeviation    0.077159
+0                             Duration    0.075852
+3                 PacketLengthVariance    0.065269
+1                        FlowBytesSent    0.061696
+2                    FlowBytesReceived    0.059971
+11         PacketTimeStandardDeviation    0.049150
+8             PacketLengthSkewFromMode    0.041248
+9   PacketLengthCoefficientofVariation    0.040323
+10                  PacketTimeVariance    0.038640
+Model saved as 'models/multiclass/smote/RandomForestClassifier_multi_SMOTE_25012026_211805.joblib'
+Feature list saved as 'models/multiclass/smote/RandomForestClassifier_multi_SMOTE_features_25012026_211805.joblib'

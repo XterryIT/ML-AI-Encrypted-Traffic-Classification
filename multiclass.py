@@ -22,13 +22,14 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.neural_network import MLPClassifier
+from sklearn.inspection import permutation_importance
 
 # Set print options to suppress scientific notation for readability
 #np.set_printoptions(suppress=True)
 
-def prepare_data():
+def prepare_data(path):
     try:
-        df = pd.read_csv('data/all_params.csv')
+        df = pd.read_csv(path)
     except FileNotFoundError:
         print("ERROR: File not found!")
         return
@@ -65,15 +66,31 @@ def prepare_data():
 
     return data, smote_data
 
-def feature_importance(model, feature_names):
-    importances = None
-
+def feature_importance(model, feature_names, x_test, y_test):
     importances = None
 
     if hasattr(model, 'feature_importances_'):
         importances = model.feature_importances_
     elif hasattr(model, 'coef_'):
         importances = np.mean(np.abs(model.coef_), axis=0)
+    else:
+        if len(x_test) > 500: # if test set is huge
+            result = permutation_importance(
+                model, x_test, y_test, 
+                n_repeats=3, 
+                max_samples=500, # only use 500 random samples
+                random_state=42, 
+                n_jobs=-1
+            )
+        else:  # if dataset is small, use it all
+            result = permutation_importance(
+                model, x_test, y_test, 
+                n_repeats=3, 
+                random_state=42, 
+                n_jobs=-1
+            )
+            
+        importances = result.importances_mean # n_repeats=5 to balance accuracy and speed, n_jobs=-1 ensures it uses all CPU cores
 
     if importances is not None:
         fi_df = pd.DataFrame({'Feature': feature_names,'Importance': importances}).sort_values(by='Importance', ascending=False)
@@ -137,7 +154,7 @@ def roc_curve_plot(model, x_test, y_test, smote):
         plt.savefig(f"models/multiclass/roc/{model_name}_{timestamp}.png", dpi=300)
 
 def save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote):
-    base_dir = "models/multiclass/"
+    base_dir = "models/multiclass"
     if smote:
         # file paths
         report_path = f"{base_dir}/reports/{model_name}_multi_SMOTE_report_{timestamp}.txt"
@@ -195,39 +212,37 @@ def model_training(model, x_train, x_test, y_train, y_test, feature_names, smote
 
     print("Getting vars...")
     training_time = end_time - start_time # time spent on training
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+
     y_pred = model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2]) # set labels to ensure [0, 1, 2] order in the matrix)
     cm_df = pd.DataFrame(cm, index=['Actual: NonDoH (0)', 'Actual: Benign (1)', 'Actual: Malicious (2)'], # setting up matrix
                              columns=['Pred: NonDoH (0)', 'Pred: Benign (1)', 'Pred: Malicious (2)'])
     report = classification_report(y_test, y_pred, labels=[0, 1, 2], target_names=['NonDoH (0)', 'Benign (1)', 'Malicious (2)']) # setting up report
-    importance = feature_importance(model, feature_names)
+
+    print("Calculating feature importance...")
+    importance = feature_importance(model, feature_names, x_test, y_test)
     feature_list = list(feature_names)
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
     print("Creating a ROC curve...")
     roc_curve_plot(model, x_test, y_test, smote)
-    print("Saving the report...")
+
+    print("Creating reports...")
     save_report(model, model_name, training_time, accuracy, cm_df, report, feature_list, importance, timestamp, smote)
 
 def main():
-
-    data, smote_data = prepare_data() # preparing data
+    path = 'data/knn_v2.csv' # used dataset
+    data, smote_data = prepare_data(path) # preparing data
     # data has x_train, x_test, y_train, y_test, x, y and smote_data has x_train_resampled, x_test, y_train_resampled, y_test, x, y in this order
     
     # defining classifiers
-    models = [DecisionTreeClassifier(random_state=42),
-              RandomForestClassifier(n_estimators=100, random_state=42),
-              LogisticRegression(max_iter=1000),
-              GaussianNB(),
-              LinearSVC(dual=False, max_iter=10000),
-              KNeighborsClassifier(n_neighbors=10),
-              LinearDiscriminantAnalysis(),
-              QuadraticDiscriminantAnalysis(),
-              MLPClassifier()]
+    models = [#RandomForestClassifier(n_estimators=100, random_state=42),#]
+              KNeighborsClassifier(n_neighbors=10),]
+              #MLPClassifier()]
 
     for model in models:
-        model_training(model, data[0], data[1], data[2], data[3], data[4].columns, False) # training and printing results out
+        #model_training(model, data[0], data[1], data[2], data[3], data[4].columns, False) # training and printing results out
         model_training(model, smote_data[0], smote_data[1], smote_data[2], smote_data[3], smote_data[4].columns, True) # training and printing results out with SMOTEd data
 
 

@@ -1,0 +1,44 @@
+
+--- Results for: KNeighborsClassifier (with SMOTE) ---
+Time spent on training: 0.32s
+
+Model Accuracy: 97.70%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               262294              4730                 2309
+Actual: Benign (1)                  392              5542                  105
+Actual: Malicious (2)               304               215                74250
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.97      0.99    269333
+   Benign (1)       0.53      0.92      0.67      6039
+Malicious (2)       0.97      0.99      0.98     74769
+
+     accuracy                           0.98    350141
+    macro avg       0.83      0.96      0.88    350141
+ weighted avg       0.98      0.98      0.98    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+0                                 Duration    0.140328
+7              PacketTimeStandardDeviation    0.136995
+5       PacketLengthCoefficientofVariation    0.118995
+14          ResponseTimeTimeSkewFromMedian    0.113662
+2                         PacketLengthMean    0.092995
+10                PacketTimeSkewFromMedian    0.089662
+1            PacketLengthStandardDeviation    0.086328
+11        PacketTimeCoefficientofVariation    0.079662
+6                       PacketTimeVariance    0.068328
+8                           PacketTimeMean    0.064995
+3               PacketLengthSkewFromMedian    0.054995
+16  ResponseTimeTimeCoefficientofVariation    0.054328
+9                         PacketTimeMedian    0.044328
+4                 PacketLengthSkewFromMode    0.044328
+12                    ResponseTimeTimeMean    0.010328
+13                  ResponseTimeTimeMedian    0.004995
+15            ResponseTimeTimeSkewFromMode    0.003662
+Model saved as 'models/multiclass/smote/KNeighborsClassifier_multi_SMOTE_25012026_234625.joblib'
+Feature list saved as 'models/multiclass/smote/KNeighborsClassifier_multi_SMOTE_features_25012026_234625.joblib'

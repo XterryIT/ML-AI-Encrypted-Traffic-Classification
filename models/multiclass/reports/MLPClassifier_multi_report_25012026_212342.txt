@@ -1,0 +1,44 @@
+
+--- Results for: MLPClassifier ---
+Time spent on training: 192.99s
+
+Model Accuracy: 99.13%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               268329               576                  428
+Actual: Benign (1)                 1522              4406                  111
+Actual: Malicious (2)               295               112                74362
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.99      1.00      0.99    269333
+   Benign (1)       0.86      0.73      0.79      6039
+Malicious (2)       0.99      0.99      0.99     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.95      0.91      0.93    350141
+ weighted avg       0.99      0.99      0.99    350141
+
+
+Feature Importance:
+                               Feature  Importance
+0                             Duration    0.203306
+13                      PacketTimeMean    0.190640
+10  PacketLengthCoefficientofVariation    0.149306
+14                    PacketTimeMedian    0.141973
+6                     PacketLengthMean    0.136640
+4                 PacketLengthVariance    0.131973
+7                     PacketLengthMode    0.111973
+5        PacketLengthStandardDeviation    0.109306
+9             PacketLengthSkewFromMode    0.101973
+12         PacketTimeStandardDeviation    0.089306
+11                  PacketTimeVariance    0.087306
+1                        FlowBytesSent    0.073306
+3                    FlowBytesReceived    0.051973
+8           PacketLengthSkewFromMedian    0.043973
+15            PacketTimeSkewFromMedian    0.038640
+16                ResponseTimeTimeMean    0.009306
+2                         FlowSentRate   -0.001360
+Model saved as 'models/multiclass/MLPClassifier_multi_25012026_212342.joblib'
+Feature list saved as 'models/multiclass/MLPClassifier_multi_features_25012026_212342.joblib'

@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from imblearn.over_sampling import SMOTE
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 
 # Set print options to suppress scientific notation for readability
 #np.set_printoptions(suppress=True)
@@ -223,9 +223,9 @@ def main():
     # data has x_train, x_train_s2, x_test, y_train_s1, y_train_s2, y_test, x in given order
 
     # defining classifiers
-    models = [DecisionTreeClassifier(random_state=42),
-              RandomForestClassifier(n_estimators=100, random_state=42),
-              KNeighborsClassifier(n_neighbors=10)]
+    models = [RandomForestClassifier(n_estimators=100, random_state=42),
+              KNeighborsClassifier(n_neighbors=10),
+              MLPClassifier()]
 
     for model in models:
         model_s1 = clone(model)

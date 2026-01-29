@@ -1,0 +1,56 @@
+
+--- Results for: MLPClassifier ---
+Time spent on training: 218.56s
+
+Model Accuracy: 99.23%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               268163               593                  577
+Actual: Benign (1)                 1149              4760                  130
+Actual: Malicious (2)               212                50                74507
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       0.99      1.00      1.00    269333
+   Benign (1)       0.88      0.79      0.83      6039
+Malicious (2)       0.99      1.00      0.99     74769
+
+     accuracy                           0.99    350141
+    macro avg       0.96      0.93      0.94    350141
+ weighted avg       0.99      0.99      0.99    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+7                         PacketLengthMean    0.264257
+12      PacketLengthCoefficientofVariation    0.156924
+13                      PacketTimeVariance    0.151591
+0                                 Duration    0.148257
+14             PacketTimeStandardDeviation    0.123591
+16                        PacketTimeMedian    0.092257
+11                PacketLengthSkewFromMode    0.077591
+9                         PacketLengthMode    0.074924
+6            PacketLengthStandardDeviation    0.062924
+2                             FlowSentRate    0.056924
+15                          PacketTimeMean    0.052257
+3                        FlowBytesReceived    0.050257
+18                PacketTimeSkewFromMedian    0.048257
+5                     PacketLengthVariance    0.046924
+10              PacketLengthSkewFromMedian    0.044257
+1                            FlowBytesSent    0.042924
+23                    ResponseTimeTimeMean    0.042257
+4                         FlowReceivedRate    0.038924
+20        PacketTimeCoefficientofVariation    0.036924
+8                       PacketLengthMedian    0.032924
+28  ResponseTimeTimeCoefficientofVariation    0.032257
+27            ResponseTimeTimeSkewFromMode    0.032257
+26          ResponseTimeTimeSkewFromMedian    0.031591
+22       ResponseTimeTimeStandardDeviation    0.023591
+24                  ResponseTimeTimeMedian    0.018924
+21                ResponseTimeTimeVariance    0.015591
+19                  PacketTimeSkewFromMode    0.008257
+17                          PacketTimeMode    0.002924
+25                    ResponseTimeTimeMode    0.001591
+Model saved as 'models/multiclass//MLPClassifier_multi_25012026_164000.joblib'
+Feature list saved as 'models/multiclass//MLPClassifier_multi_features_25012026_164000.joblib'

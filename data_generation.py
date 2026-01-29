@@ -37,23 +37,18 @@ def parsing(n, columns_to_drop):
 
 def mod():
     columns = ['SourceIP', 'DestinationIP', 'TimeStamp', 'SourcePort', 'DestinationPort'] # this should always be dropped
-    c = input("Dropping more than basic columns? (y for yes)")
-    if c == "y":
-        columns.extend(['PacketLengthVariance', 'PacketLengthStandardDeviation', 'PacketLengthMean', 'PacketLengthMedian', 'PacketLengthMode', 'PacketLengthSkewFromMedian', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'PacketTimeStandardDeviation', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation'])
-        print(columns)
+    # features: 'Duration', 'FlowBytesSent', 'FlowSentRate', 'FlowBytesReceived', 'FlowReceivedRate', 'PacketLengthVariance', 'PacketLengthStandardDeviation', 'PacketLengthMean', 'PacketLengthMedian', 'PacketLengthMode', 'PacketLengthSkewFromMedian', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'PacketTimeStandardDeviation', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation'
+    # columns to drop for each analyzed algorithm
+    rf = ['PacketLengthVariance', 'FlowBytesReceived', 'PacketTimeStandardDeviation', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'FlowSentRate', 'FlowReceivedRate', 'PacketLengthSkewFromMedian', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation'] # v2: ['FlowBytesReceived', 'PacketTimeStandardDeviation', 'PacketLengthSkewFromMode', 'PacketLengthCoefficientofVariation', 'PacketTimeVariance', 'FlowSentRate', 'FlowReceivedRate', 'PacketLengthSkewFromMedian', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation'] # v1: ['FlowSentRate', 'FlowReceivedRate', 'PacketLengthSkewFromMedian', 'PacketTimeMean', 'PacketTimeMedian', 'PacketTimeMode', 'PacketTimeSkewFromMedian', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation']
+    knn = ['FlowBytesSent', 'PacketLengthVariance', 'FlowSentRate', 'FlowReceivedRate', 'PacketLengthMedian', 'PacketLengthMode', 'PacketTimeMode', 'PacketTimeSkewFromMode', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMode', 'FlowBytesReceived'] # v1: ['FlowBytesSent', 'PacketLengthVariance', 'FlowSentRate', 'FlowReceivedRate', 'PacketLengthMedian', 'PacketLengthMode', 'PacketLengthSkewFromMode', 'PacketTimeMode', 'PacketTimeSkewFromMode', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMean', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMode', 'FlowBytesReceived']
+    mlp = ['FlowReceivedRate', 'PacketLengthMedian', 'PacketTimeMode', 'PacketTimeSkewFromMode', 'PacketTimeCoefficientofVariation', 'ResponseTimeTimeVariance', 'ResponseTimeTimeStandardDeviation', 'ResponseTimeTimeMedian', 'ResponseTimeTimeMode', 'ResponseTimeTimeSkewFromMedian', 'ResponseTimeTimeSkewFromMode', 'ResponseTimeTimeCoefficientofVariation']
+    # modify to drop more columns
+    columns.extend(rf)
+    print("Dropping", columns)
     
-    n = int(input("Dataset lines? (0 for all)")) # sets how many lines it takes from every file # set to 0 to get everything from the file
+    n = 0 # sets how many lines it takes from every file # set to 0 to get everything from the file
     merged_df = parsing(n, columns)
-    if n == 0:
-        if c == 'y':
-            merged_df.to_csv('data/chosen_params.csv', index=False)
-        else:
-            merged_df.to_csv('data/all_params.csv', index=False)
-    else:
-        if c == 'y':
-            merged_df.to_csv(f"data/{n}_chosen_params.csv", index=False)
-        else:
-            merged_df.to_csv(f"data/{n}_all_params.csv", index=False)
+    merged_df.to_csv('data/rf_v3.csv', index=False) # naming: n(if less data is taken)_[algorithm_name](for which features are chosen).csv
 
 
 def main():

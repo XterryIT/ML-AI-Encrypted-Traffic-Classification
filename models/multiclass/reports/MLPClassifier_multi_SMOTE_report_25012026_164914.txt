@@ -1,0 +1,56 @@
+
+--- Results for: MLPClassifier (with SMOTE) ---
+Time spent on training: 550.48s
+
+Model Accuracy: 97.74%
+Confusion Matrix: (3x3)
+                       Pred: NonDoH (0)  Pred: Benign (1)  Pred: Malicious (2)
+Actual: NonDoH (0)               262068              6753                  512
+Actual: Benign (1)                  268              5720                   51
+Actual: Malicious (2)               223               110                74436
+
+Classification Report (0=NonDoH, 1=Benign, 2=Malicious):
+               precision    recall  f1-score   support
+
+   NonDoH (0)       1.00      0.97      0.99    269333
+   Benign (1)       0.45      0.95      0.61      6039
+Malicious (2)       0.99      1.00      0.99     74769
+
+     accuracy                           0.98    350141
+    macro avg       0.82      0.97      0.86    350141
+ weighted avg       0.99      0.98      0.98    350141
+
+
+Feature Importance:
+                                   Feature  Importance
+0                                 Duration    0.265389
+6            PacketLengthStandardDeviation    0.254722
+15                          PacketTimeMean    0.150722
+9                         PacketLengthMode    0.142056
+7                         PacketLengthMean    0.136722
+10              PacketLengthSkewFromMedian    0.134056
+12      PacketLengthCoefficientofVariation    0.126056
+14             PacketTimeStandardDeviation    0.116722
+11                PacketLengthSkewFromMode    0.110056
+13                      PacketTimeVariance    0.101389
+28  ResponseTimeTimeCoefficientofVariation    0.098056
+20        PacketTimeCoefficientofVariation    0.093389
+18                PacketTimeSkewFromMedian    0.075389
+5                     PacketLengthVariance    0.069389
+22       ResponseTimeTimeStandardDeviation    0.068722
+4                         FlowReceivedRate    0.056722
+27            ResponseTimeTimeSkewFromMode    0.050056
+8                       PacketLengthMedian    0.047389
+26          ResponseTimeTimeSkewFromMedian    0.042722
+3                        FlowBytesReceived    0.042722
+1                            FlowBytesSent    0.042056
+2                             FlowSentRate    0.038056
+23                    ResponseTimeTimeMean    0.034722
+19                  PacketTimeSkewFromMode    0.025389
+16                        PacketTimeMedian    0.023389
+24                  ResponseTimeTimeMedian    0.022722
+21                ResponseTimeTimeVariance    0.018722
+25                    ResponseTimeTimeMode    0.004722
+17                          PacketTimeMode    0.002056
+Model saved as 'models/multiclass//smote/MLPClassifier_multi_SMOTE_25012026_164914.joblib'
+Feature list saved as 'models/multiclass//smote/MLPClassifier_multi_SMOTE_features_25012026_164914.joblib'
