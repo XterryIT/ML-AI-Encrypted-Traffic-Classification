@@ -15,7 +15,7 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 # --- KONFIGURACJA ---
-FILE_PATH = 'data/10000_chosen_params.csv'
+FILE_PATH = 'data/10000_all_params.csv'
 OUTPUT_DIR = "models/unsupervised"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -47,8 +47,8 @@ def get_models_dict():
         "K-Means": KMeans(n_clusters=6, random_state=42, n_init='auto'),
         "Hierarchical": AgglomerativeClustering(n_clusters=6),
         "GMM_Distribution": GaussianMixture(n_components=6, random_state=42),
-        "DBSCAN": DBSCAN(eps=3.0, min_samples=10),
-        "LOF": LocalOutlierFactor(n_neighbors=20, contamination=0.1)
+        # "DBSCAN": DBSCAN(eps=2.5, min_samples=5),
+        # "LOF": LocalOutlierFactor(n_neighbors=20, contamination=0.1)
     }
 
 
@@ -136,40 +136,17 @@ def analyze_clusters(cluster_labels, y_true, model_name):
     print("               Kolumny to numery klastrów przydzielone przez algorytm.")
     print(cm)
 
-    # --- KROK 4: Profilowanie Klastrów (Tabela szczegółowa) ---
-    stats = df_map.groupby('Cluster')['True_Label'].agg(['count', 'mean'])
-
-    print(f"\n[INTERPRETACJA KLASTRÓW]")
-    print(f"{'ID':<5} | {'Rozmiar':<8} | {'% Ataków':<10} | {'DIAGNOZA I ZALECENIE'}")
-    print("-" * 100)
-
-    for cluster_id, row in stats.iterrows():
-        count = int(row['count'])
-        percent = row['mean'] * 100
-        
-        if percent > 95:
-            description = "Wykryto profil ataku (Wysoka precyzja)."
-        elif percent < 5:
-            description = "Ruch bezpieczny (Profil normatywny)."
-        elif percent > 50:
-            description = "Klaster silnie zanieczyszczony atakami (Wysokie Ryzyko)."
-        else:
-            description = "Klaster niejednoznaczny. Ataki ukryte w ruchu normalnym."
-
-        print(f"{cluster_id:<5} | {count:<8} | {percent:>6.1f}%   | {description}")
-        print(f"{'':<5} | {'':<8} | {'':<10}")
-        print("-" * 100)
 
     # --- KROK 5: OGÓLNA OCENA MODELU (Nowa sekcja) ---
     print(f"\n[OGÓLNA OCENA MODELU: {model_name}]")
     
-    print(f"2. Precyzja (Precision):   {precision:.4f}")
+    print(f"Precyzja (Precision):   {precision:.4f}")
     print(f"   (Gdy model zgłasza atak, na ile jest to wiarygodne? Ochrona przed fałszywymi alarmami.)")
     
-    print(f"3. Czułość (Recall):       {recall:.4f}")
+    print(f"Czułość (Recall):       {recall:.4f}")
     print(f"   (Jaki procent prawdziwych ataków został wykryty? Ochrona przed przepuszczeniem ataku.)")
     
-    print(f"4. Wynik F1 (F1-Score):    {f1:.4f}")
+    print(f"Wynik F1 (F1-Score):    {f1:.4f}")
     print(f"   (Średnia harmoniczna precyzji i czułości. Najlepsza miara ogólna.)")
 
     # Werdykt tekstowy na podstawie F1
