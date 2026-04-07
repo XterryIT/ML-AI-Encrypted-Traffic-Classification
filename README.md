@@ -38,7 +38,7 @@ The **Random Forest** classifier demonstrated the highest performance, especiall
 ## 🚀 How to Run
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/XterryIT/Encrypted-Traffic-Classification.git](https://github.com/XterryIT/Encrypted-Traffic-Classification.git)
+   git clone https://github.com/XterryIT/Encrypted-Traffic-Classification.git
    ```
 2. Install dependencies:
    ```bash
