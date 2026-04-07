@@ -40,11 +40,15 @@ The **Random Forest** classifier demonstrated the highest performance, especiall
    ```bash
    git clone https://github.com/XterryIT/Encrypted-Traffic-Classification.git
    ```
-2. Install dependencies:
+2. Create a virtual environment:
+   ```bash
+   python -m venv myvenv
+   ```
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the analysis:
+4. Run the analysis:
    ```bash
    python main.py
    ```
